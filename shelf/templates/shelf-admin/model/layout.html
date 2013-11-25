@@ -1,0 +1,66 @@
+{% macro filter_form() %}
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ _gettext('Filter') }} <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        {% for flt in filter_groups %}
+            {#{ filter_data|tojson }}
+            {{ flt|tojson }}
+            {{ admin_view._filters }#}
+
+                {% if loop.index0 > 0 %}
+                    <li class="divider"></li>
+                {% endif %}
+
+                {% if flt[1][0][0] == 2 %}
+                    <li><a href="#">
+                        {{ flt[0] }}
+                        <span class="pull-right"><i class="fa fa-check"></i></span>
+                    </a></li>
+                {% elif flt[1][0][0] == 0 %}
+                    <li class="dropdown-header">{{ flt[0] }}</li>
+                    {% for d in filter_data[flt[1][0][0]] %}
+                       <li><a href="#">
+                        {{ d[1] }}
+                        <span class="pull-right"><i class="fa fa-check"></i></span>
+                        </a></li>
+                    {% endfor %}
+                {% endif %}
+
+        {% endfor %}
+        <li class="divider"></li>
+        <li>
+            <a href="#">{{ _gettext('Apply') }}</a>
+            {#<form id="filter_form" class= method="GET" action="{{ return_url }}">
+            </form>#}
+        </li>
+        {% if active_filters %}
+        <li><a href="{{ clear_search_url }}">{{ _gettext('Reset Filters') }}</a></li>
+        {% endif %}
+    </ul>
+        
+    {#</form>#}
+{% endmacro %}
+
+{% macro search_form(input_class="span2") %}
+<form class="navbar-form" method="GET" action="{{ return_url }}">
+    {#{% if sort_column is not none %}
+    <input type="hidden" name="sort" value="{{ sort_column }}"></input>
+    {% endif %}
+    {% if sort_desc %}
+    <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
+    {% endif %}#}
+    {% if search %}
+    <div class="input-group">
+        <input type="text" name="search" value="{{ search }}" class="form-control {{ input_class }}" placeholder="{{ _gettext('Search') }}"></input>
+        <span class="input-group-btn">
+            <a href="{{ clear_search_url }}" class="clear add-on">
+                <i class="icon-remove"></i>
+            </a>
+        </span>
+    </div>
+    {% else %}
+    <div class="form-group">
+        <input type="text" name="search" value="" class="form-control" placeholder="{{ _gettext('Search') }}"></input>
+    </div>
+    {% endif %}
+</form>
+{% endmacro %}

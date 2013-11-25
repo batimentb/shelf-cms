@@ -1,0 +1,64 @@
+{% extends 'shelf-admin/master.html' %}
+{% import 'shelf-admin/lib.html' as lib with context %}
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="row" style="margin-top: 50px; background-color: #ffffff">
+        <div class="col-xs-12" style="border-bottom: 1px solid black;">
+            <h1>{{ admin_view.name.upper() }}</h1>
+        </div>
+        <div class="col-xs-12"  style="padding-top: 25px; padding-bottom: 15px">
+          {% call lib.form_tag(form) %}
+              {{ lib.render_form_fields(form) }}
+              {#{ lib.render_form_buttons(return_url, extra()) }#}
+          {% endcall %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom %}
+    <div class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                {% block model_menu_bar %}
+                <ul class="nav navbar-nav">
+                  
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  <li><a role="submit" class="save-model" href="#">{{ _gettext('Save') }}</a></li>
+                  <li><a href="{{ return_url }}">{{ _gettext('Cancel') }}</a></li>
+                </ul>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+  <script src="{{ url_for('admin.static', filename='admin/js/form.js') }}"></script>
+
+  <script language="javascript">
+        (function($) {
+            $('a.save-model').click(function (e) {
+                $("form.model-form").submit();
+                e.stopPropagation();
+            })
+        })(jQuery);
+    </script>
+{% endblock %}
