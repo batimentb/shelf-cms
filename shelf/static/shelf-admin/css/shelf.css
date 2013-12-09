@@ -279,6 +279,15 @@ form.icon button {
   background: transparent;
 }
 
+form.icon {
+  display: inline-block;
+  padding-left: 5px;
+}
+
+a.icon {
+  display: inline-block;
+}
+
 h1
 {
   color: #4c4c4c;
@@ -315,6 +324,53 @@ h1
 td.center, th.center
 {
   text-align: center;
+}
+
+.files a
+{
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  color: #232323;
+}
+
+.files > div:hover
+{
+  background: #f4f4f4;
+}
+
+.files > div.selected
+{
+  background: #fde6d5;
+}
+
+.files a:link 
+{ 
+  text-decoration:none; 
+} 
+
+.files .icon i
+{
+  color: #d2d2d2;
+}
+
+.files .selected .icon i
+{
+  color: #f1d4bf;
+}
+
+.files .selected .icon i:hover
+{
+  color: #ca9670;
+}
+
+.files > div .icon
+{
+  display: none;
+}
+
+.files > div:hover .icon
+{
+  display: block;
 }
 
 

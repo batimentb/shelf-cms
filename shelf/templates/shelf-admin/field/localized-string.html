@@ -1,0 +1,26 @@
+<div class="localized-text">
+<div class="input-group">
+	<span class="input-group-addon">EN</span>
+	<input class="en form-control" name="{{ id }}-en" id="{{ id }}-en" type="text" 
+	value="{% if data['en'] %}{{ data['en'] }}{% endif %}" />
+</div>
+<br>
+<div class="accordion" id="{{ id }}-accordion" style="border: 0px">
+	<div class="accordion-group">
+		<div class="accordion-heading" style="border: 0px">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ id }}-accordion" href="#{{ id }}-panel">
+		        Translate
+		      </a>
+		</div>
+		<div id="{{ id }}-panel" class="accordion-body collapse" style="border: 0px">
+	    	<div class="accordion-inner" style="border: 0px">
+	    		<div class="input-group">
+					<span class="input-group-addon">FR</span>
+					<input class="fr form-control" name="{{ id }}-fr" id="{{ id }}-fr" type="text" 
+					value="{% if data['fr'] %}{{ data['fr'] }}{% endif %}" />
+				</div>
+	      	</div>
+    	</div>
+	</div>
+</div>
+</div>

@@ -1,0 +1,137 @@
+{% extends 'admin/master.html' %}
+{% import 'shelf-admin/lib.html' as lib with context %}
+
+{% block body %}
+    <div class="row" style="margin-top: 50px; background-color: #ffffff">
+        <div class="col-xs-12" style="border-bottom: 1px solid black;">
+            <h1>{{ admin_view.name.upper() }}</h1>
+        </div>
+        <div class="col-xs-12"  style="padding-top: 25px">
+            <div class="row files">
+                {% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
+                {% for name, path, is_dir, size in items %}
+                <div style="padding: 20px; text-align: center" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">                    
+                    {%- if admin_view.can_delete and path -%}
+                    {% if is_dir %}
+                        {% if name != '..' and admin_view.can_delete_dirs %}
+                            <form class="pull-right icon" method="POST" action="{{ url_for('.delete') }}">
+                                <input type="hidden" name="path" value="{{ path }}"></input>
+                                <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                                    <i class="fa fa-times-circle fa-lg"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        {% else %}
+                        <form class="pull-right icon" method="POST" action="{{ url_for('.delete') }}">
+                            <input type="hidden" name="path" value="{{ path }}"></input>
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                                <i class="fa fa-times-circle fa-lg"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                    {% if admin_view.can_rename and path and name != '..' %}
+                    <a class="icon pull-right" href="{{ url_for('.rename', path=path) }}">
+                            <i class="fa fa-pencil fa-lg"></i>
+                    </a>
+                    {% endif %}
+                    <br>
+                    {% if is_dir %}
+                        <a class="link-dir" href="{{ get_dir_url('.iconic_index', path)|safe }}">
+                            <i class="fa {% if name == ".." %}fa-arrow-circle-up{% else %}fa-folder{% endif %} fa-4x"></i><br>
+                            <span>{{ name }}</span>
+                        </a>
+                    {% else %}
+                        {% if mimes[path] == "image" %}
+                        <a class="link-file" href="{{ get_file_url(path)|safe }}" target="_new">
+                            <img src="{{ get_file_url(path)|safe }}" style="max-width: 100px; max-height: 56px"/><br>
+                            <span>{{ name }}</span>
+                        </a>
+                        {% else %}
+                        <a class="link-file" href="{{ get_file_url(path)|safe }}" target="_new">
+                            <i class="fa {{ icons_by_mime[mimes[path]] }} fa-4x"></i><br>
+                            <span>{{ name }}</span>
+                        </a>
+                        {% endif %}  
+                    {% endif %}
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block bottom %}
+    <div class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-left">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown">Presentation</a>
+                        <ul class="dropdown-menu">
+                            {% if dir_path %}
+                            <li><a href="{{ url_for('.index', path=dir_path) }}">List</a></li>
+                            <li><a href="{{ url_for('.iconic_index', path=dir_path) }}">Icons</a></li>
+                            {% else %}
+                            <li><a href="{{ url_for('.index') }}">List</a></li>
+                            <li><a href="{{ url_for('.iconic_index') }}">Icons</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown">Filter</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">List</a></li>
+                            <li><a href="#">Icons</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a>Upload</a>
+                    </li>
+                    <li>
+                        <a>New directory</a>
+                    </li>
+                    <li>
+                        <a>Delete</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='admin/js/form.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
+
+    <script language="javascript">
+        (function($) {
+            $(".files > div").click(function () {
+                if ($(this).find(".link-dir").length == 0)
+                {
+                    $(this).toggleClass("selected");
+                    return false;
+                }                
+            });
+            $(".files > div").dblclick(function () {
+                 if ($(this).find(".link-dir").length == 0)
+                {
+                    window.open($(this).find(".link-file").attr("href"));
+                }                   
+            });
+        })(jQuery);
+    </script>
+{% endblock %}
