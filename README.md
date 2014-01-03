@@ -1,3 +1,3 @@
-Shelf : Enhancing flask microframework with beautiful admin and cms-like features
+Shelf
 =====
-
+Enhancing flask microframework with beautiful admin and cms-like features
