@@ -1,0 +1,23 @@
+<div class="localized-editor">
+	<textarea class="fr wysiwyg" name="{{ id }}-en" id="{{ id }}-en" style="width: 100%; height: 300px"/>
+	{% if data['en'] %}{{ data['en'] }}{% endif %}
+	</textarea>
+<br>
+<div class="accordion" id="{{ id }}-accordion" style="border: 0px">
+	<div class="accordion-group">
+		<div class="accordion-heading" style="border: 0px">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ id }}-accordion" href="#{{ id }}-panel">
+		        Translations
+		      </a>
+		</div>
+		<div id="{{ id }}-panel" class="accordion-body collapse" style="border: 0px">
+	    	<div class="accordion-inner" style="border: 0px">
+					<h3 class="add-on">French</h3>
+					<textarea class="fr wysiwyg" name="{{ id }}-fr" id="{{ id }}-fr"/>
+					{% if data['fr'] %}{{ data['fr'] }}{% endif %}
+					</textarea>
+	      	</div>
+    	</div>
+	</div>
+</div>
+</div>

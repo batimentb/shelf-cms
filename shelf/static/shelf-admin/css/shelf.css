@@ -22,9 +22,10 @@ body {
 /* Top navbar */
 
 .navbar-fixed-top {
-  background-image: url(../img/patch_top_menu.jpg);
+  background-image: url(../img/patch_top_menu.png);
   background-repeat: no-repeat;
   background-size: 100% auto;
+  border: 0px none;
 }
 
 .navbar-fixed-top .navbar-collapse {
@@ -37,7 +38,7 @@ body {
   padding-top: 10px; 
   padding-bottom: 7px; 
   padding-left: 50px; 
-  padding-right: 50px; 
+  padding-right: 30px; 
   background-color: #ff4262;
 }
 
@@ -159,6 +160,7 @@ body {
   background-image: url(../img/patch_bottom_menu.jpg);
   background-repeat: no-repeat;
   background-size: 100% auto;
+  border: 0px none;
 }
 
 .navbar-fixed-bottom .navbar-collapse {
@@ -166,24 +168,44 @@ body {
 }
 
 .navbar-fixed-bottom a.navbar-brand {
-  background-color: #ee847f;
+  background-color: #ff4262;
+  font-size: 14px;
   color: #ffffff;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .navbar-fixed-bottom .navbar-brand:hover, 
 .navbar-fixed-bottom .navbar-brand:focus {
-  background-color: #ee847f !important;
+  background-color: #ff4262 !important;
   color: #ffffff !important;
+  font-size: 14px;
+}
+
+.navbar-fixed-bottom ul.nav > li
+{
+  border-right: 1px solid #f8b5b2;
 }
 
 .navbar-fixed-bottom ul.nav > li > a
 {
   color: #ffffff !important;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+}
+
+.navbar-fixed-bottom ul.nav > li.actions > a
+{
+  background-color: #ef8580;
+}
+
+.navbar-fixed-bottom ul.nav > li > a:hover
+{
+  background-color: #feaaa5 !important;
 }
 
 .navbar-fixed-bottom ul.nav > li.open > a
 {
-  background-color: #ff9d98 !important;
+  background-color: #feaaa5 !important;
   color: #ffffff !important;
 }
 
@@ -195,6 +217,12 @@ body {
 .navbar-fixed-bottom .dropdown-menu
 {
   background-color: #ff9d98 !important;
+  border: 0px none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  margin-bottom: 0px !important;
+  border-bottom: 1px solid #f8b5b2 !important;
 }
 
 .navbar-fixed-bottom .dropdown-menu > li.dropdown-header
@@ -311,6 +339,36 @@ h1
   color: #232323;
 }
 
+.model-list tbody tr:hover
+{
+  background-color: #f4f4f4;
+}
+
+.model-list tbody tr.selected
+{
+  background-color: #fde6d5 !important;
+}
+
+.model-list tbody tr.selected td
+{
+  color: #ca9670 !important;
+}
+
+.model-list tbody tr.selected i
+{
+  color: #e5c4ac !important;
+}
+
+.model-list tbody tr.selected i:hover
+{
+  color: #ca9670 !important;
+}
+
+.model-list tbody tr.selected:hover
+{
+  background-color: #fddabe !important;
+}
+
 .model-list i
 {
   color: #d2d2d2;
@@ -321,10 +379,69 @@ h1
   color: #4c4c4c;
 }
 
+.model-list th
+{
+  border-bottom: 1px solid #ddd !important;
+}
+
 td.center, th.center
 {
   text-align: center;
 }
+
+.model-list a
+{
+  color: #4c4c4c;
+  font-size: 16px;
+}
+
+.model-list a:hover
+{
+  color: #4c4c4c;
+}
+
+/* Edition */
+
+label
+{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+input
+{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+}
+
+option
+{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+}
+
+a {
+  color: #ff4262;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+a:hover {
+  color: #ff4262;
+}
+
+.localized-editor iframe
+{
+  width: 100% !important;
+  height: 300px !important;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+}
+
+/* Bibliotheque */
 
 .files a
 {

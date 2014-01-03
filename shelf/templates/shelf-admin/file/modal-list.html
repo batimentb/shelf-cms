@@ -1,0 +1,65 @@
+<div class="modal-dialog">
+    <div class="modal-content" style='border-radius: 0px'>
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+            <h3>CHOISIR</h3>
+            <ol class="breadcrumb">
+                <li>
+                    <a class="link" href="{{ get_dir_url('.modal_index', path=None) }}">Root</a>
+                </li>
+                {% for name, path in breadcrumbs[:-1] %}
+                <li>
+                    <a class="link" href="{{ get_dir_url('.modal_index', path=path) }}">{{ name }}</a>
+                </li>
+                {% endfor %}
+                {% if breadcrumbs %}
+                <li class="active">
+                    {{ breadcrumbs[-1][0] }}
+                </li>
+                {% endif %}
+            </ol>
+        </div>
+
+
+        <div class="modal-body">
+            <table class="table table-bordered model-list">
+                {% for name, path, is_dir, size in items %}
+                <tr {% if not is_dir %}class="file"{% endif %}>
+                    {% if is_dir %}
+                    <td colspan="2">
+                        <i style="width: 20px" class="fa fa-folder"></i> <a href="{{ get_dir_url('.modal_index', path)|safe }}" class="link"><span>{{ name }}</span>
+                        </a>
+                    </td>
+                    {% else %}
+                    <td>
+                        {% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
+                        <i style="width: 20px" class="fa {{ icons_by_mime[mimes[path]] }}"></i> <a href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+        <div class="modal-footer" style="padding: 0px;">
+            <div class="row" style="background-color: #ff9d98; height: 40px; margin: 0px">
+                <div style="width: 20%; height: 100%; text-align: center; float: left; padding-top: 10px"><a href="{{ url_for('.modal_iconic_index', path=dir_path) }}" class="link"><i class="fa fa-th fa-lg"></i></a></div>
+                <div style="width: 20%; height: 100%; text-align: center; float: left; padding-top: 10px"><a href="{{ url_for('.index', path=dir_path) }}" target="_new"><i class="fa fa-hdd-o fa-lg"></i></a></div>
+                <div style="width: 20%; height: 100%; text-align: center; float: left; padding-top: 10px"><a href="{{ url_for('.upload', path=dir_path) }}" target="_new"><i class="fa fa-upload fa-lg"></i></a></div>
+                <div style="width: 20%; height: 100%; text-align: center; float: left; padding-top: 10px"><i class="fa fa-search fa-lg"></i></div>
+                <div style="width: 20%; height: 100%; text-align: center; float: left; padding-top: 10px">OK</div>
+            </div>
+
+            {#<button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
+            <button class="btn btn-primary chose-file disabled" data-dismiss="modal">Choisir fichier</button>#}
+        </div>
+    </div>
+</div>
+
+<script >
+$('a.link').click(function() {
+    $(this).closest('.modal').load($(this).attr('href'));
+    return false;
+  });
+</script>

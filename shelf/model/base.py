@@ -3,7 +3,17 @@ from sqlalchemy.types import String, Integer, Text, Enum
 from flask_sqlalchemy import SQLAlchemy
 
 computed_models = {}
-db = SQLAlchemy()
+computed_pages = []
+
+class ShelfSQLAlchemy(SQLAlchemy):
+	def create_all(self):
+		super(ShelfSQLAlchemy, self).create_all()
+		for c in computed_pages:
+			if self.session.query(c).count() == 0:
+				self.session.add(c())
+		self.session.commit()
+
+db = ShelfSQLAlchemy()
 
 def shelf_computed_models():
 	return computed_models
@@ -79,17 +89,17 @@ class LocalizedString:
     id = db.Column(db.Integer, primary_key=True)
     lang = db.Column(db.String(2))
     value = db.Column(db.String(255))
-    trad = db.relationship('LocalizedString')
+    trad = db.relationship('LocalizedString', backref=db.backref("parent", remote_side=[id]))
     parent_id = db.Column(db.Integer, db.ForeignKey('localized_string.id'))
 
 class LocalizedText:
     id = db.Column(db.Integer, primary_key=True)
     lang = db.Column(db.String(2))
     value = db.Column(db.Text)
-    trad = db.relationship('LocalizedText')
+    trad = db.relationship('LocalizedText', backref=db.backref("parent", remote_side=[id]))
     parent_id = db.Column(db.Integer, db.ForeignKey('localized_text.id'))
 
-class File:
+class RemoteFile:
 	id = db.Column(db.Integer, primary_key=True)
 	path = db.Column(db.String(255))
 
@@ -107,6 +117,32 @@ class Marker:
 	id = db.Column(db.Integer, primary_key=True)
 	longitude = db.Column(db.Float)
 	latitude = db.Column(db.Float)
+
+class Page(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	name = db.Column(db.String(50))
+
+	__mapper_args__ = {
+		'polymorphic_on': name,
+		'polymorphic_identity': 'page'
+	}
+
+
+def register_page(model, db, name=None):
+	params = {}
+	for k, v in model.__dict__.items():
+		if k.startswith('_'):
+			continue
+		params[k] = v
+
+	params['__mapper_args__'] = {'polymorphic_identity': name if name else model.__name__.lower() }
+	computed_models[model.__name__] = type(model.__name__, (Page,), params)
+
+	prepare_model(computed_models[model.__name__], db)
+	if computed_models[model.__name__] not in computed_pages:
+		computed_pages.append(computed_models[model.__name__])
+	
+
 
 def prepare_model(model, db):
 	compute_model = True

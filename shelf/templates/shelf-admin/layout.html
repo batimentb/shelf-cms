@@ -34,14 +34,27 @@
   {% endfor %}
 {% endmacro %}
 
+<div class="alert alert-success">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-info">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-warning">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-danger">
+  <a href="#" class="alert-link">...</a>
+</div>
+
 {% macro messages() %}
   {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
       {% for category, m in messages %}
         {% if category == 'error' %}
-        <div class="alert alert-error">
+        <div class="alert alert-danger" style="position: fixed; right: 0px; left: 0px; bottom: 30px">
         {% else %}
-        <div class="alert">
+        <div class="alert alert-success" style="position: fixed; right: 0px; left: 0px; bottom: 30px">
         {% endif %}
           <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
           {{ m }}

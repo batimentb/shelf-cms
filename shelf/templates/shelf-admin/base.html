@@ -100,11 +100,10 @@
 
       <!-- Begin page content -->
       <div class="container">
-        {{ layout.messages() }}
-
         {% block body %}{% endblock %}
       </div>
 
+      {{ layout.messages() }}
       {% block bottom %}
       {% endblock %}
 

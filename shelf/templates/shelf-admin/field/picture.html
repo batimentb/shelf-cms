@@ -1,0 +1,18 @@
+<div class="picture-widget">
+<img src="{% if img is defined %}{{ url_for('static', filename=img) }}{% endif %}" width="159" height="100" alt="Vide"></img>
+<a role="button" class="btn modal-open">Modifier source</a>
+<input type="hidden" name="{{ fid }}" value="{% if img is defined %}{{ img }}{% endif %}">
+<!-- Modal -->
+<div class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">Ã—</button>
+<h3>Choix de l'image source</h3>
+</div>
+<div class="modal-body">
+</div>
+<div class="modal-footer">
+<button class="btn" data-dismiss="modal" aria-hidden="true">Annuler</button>
+<button class="btn btn-primary chose-img disabled" data-dismiss="modal">Choisir image</button>
+</div>
+</div>
+</div>
