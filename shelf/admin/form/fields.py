@@ -12,28 +12,31 @@ from flask import render_template
 
 class RemoteFileWidget(TextInput):
     def __call__(self, *args, **kwargs):
-        #for arg in args:
-        #   print arg
-        return render_template("shelf-admin/field/remote-file.html", img=args[0])
+        return render_template("shelf-admin/field/remote-file.html", args=args[0])
 
 class RemoteFileField(TextField):
     widget = RemoteFileWidget()
-
-    def _value(self):
-        if self.data:
-            return self.data
-        else:
-            return None
 
     def process_formdata(self, valuelist):
         if valuelist:
             self.data = valuelist[0]
 
+    def process_data(self, value):
+        if value:
+            self.data = value.path
+
+    def populate_obj(self, obj, name):
+        if getattr(obj, name) is None:
+            setattr(obj, name, getattr(obj.__class__, name).mapper.class_(path=self.data))
+            db.session.add(getattr(obj, name))
+        else:
+            getattr(obj, name).path = self.data
+
 class PictureWidget(object):
     def __call__(self, *args, **kwargs):
         #for arg in args:
         #   print arg
-        return render_template("shelf-admin/picture-modal.html", img=args[0].data['source'], fid=args[0].id)
+        return render_template("shelf-admin/field/picture.html", args=args[0])
 
 class PictureField(TextField):
     widget = PictureWidget()
@@ -43,13 +46,12 @@ class PictureField(TextField):
         #self.picture_formats = formats
         #self.ratio = ratio
 
-    def _value(self):
-        if self.data:
-            return self.data
-        else:
-            return None
-
     def populate_obj(self, obj, name):
+        if getattr(obj, name) is None:
+            setattr(obj, name, getattr(obj.__class__, name).mapper.class_(path=self.data['path']))
+            db.session.add(getattr(obj, name))
+        else:
+            getattr(obj, name).path = self.data['path']
         '''if len(self.data["source"]) == 0:
             return
 
@@ -96,17 +98,18 @@ class PictureField(TextField):
             
 
     def process_formdata(self, valuelist):
+        print valuelist
         if valuelist and valuelist[0] is not None:
-            self.data = {"source": valuelist[0].replace("/static/", ""),
-                "x": 0, "y": 0, "width": 650, "height": 390}
+            self.data = {"path": valuelist[0]}
         else:
-            self.data = {"source": "", "x": None, "y": None, "width": None, "height": None}
+            self.data = {"path": None}
+        print self.data
 
     def process_data(self, value):
         if value:
-            self.data = {"source": value.source, "width": 650, "height": 390, "x": 0, "y": 0}
+            self.data = {"path": value.path}
         else:
-            self.data = {"source": "", "x": None, "y": None, "width": None, "height": None}
+            self.data = {"path": None}
 
 class WysiwygTextWidget(TextArea):
     def __call__(self, *args, **kwargs):

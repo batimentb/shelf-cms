@@ -3,14 +3,18 @@
 
 {% block body %}
     <div class="row" style="margin-top: 50px; background-color: #ffffff">
-        <div class="col-xs-12" style="border-bottom: 1px solid black;">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; padding-top: 5px; padding-left: 25px;">
+            {% if dir_path %}
+            <h1>/{{ dir_path.upper() }}</h1>
+            {% else %}
             <h1>{{ admin_view.name.upper() }}</h1>
+            {% endif %}
         </div>
-        <div class="col-xs-12"  style="padding-top: 25px">
-            <div class="row files">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; overflow: hidden; display: table; border-collapse: collapse">
+            <div class="row files"; style="display: table-row">
                 {% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
                 {% for name, path, is_dir, size in items %}
-                <div style="padding: 20px; text-align: center" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">                    
+                <div style="text-align: center; border: 1px solid #ddd; display: table-cell; height: 160px" class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
                     {%- if admin_view.can_delete and path -%}
                     {% if is_dir %}
                         {% if name != '..' and admin_view.can_delete_dirs %}
@@ -37,21 +41,15 @@
                     {% endif %}
                     <br>
                     {% if is_dir %}
-                        <a class="link-dir" href="{{ get_dir_url('.iconic_index', path)|safe }}">
-                            <i class="fa {% if name == ".." %}fa-arrow-circle-up{% else %}fa-folder{% endif %} fa-4x"></i><br>
-                            <span>{{ name }}</span>
-                        </a>
+                            <i class="fa {% if name == ".." %}fa-arrow-circle-up{% else %}fa-folder{% endif %} fa-4x"></i>
+                            <a class="link-dir" href="{{ get_dir_url('.iconic_index', path)|safe }}"><span>{{ name }}</span></a>
                     {% else %}
                         {% if mimes[path] == "image" %}
-                        <a class="link-file" href="{{ get_file_url(path)|safe }}" target="_new">
-                            <img src="{{ get_file_url(path)|safe }}" style="max-width: 100px; max-height: 56px"/><br>
-                            <span>{{ name }}</span>
-                        </a>
+                            <img src="{{ get_file_url(path)|safe }}" style="max-width: 100px; max-height: 56px"/>
+                            <a class="link-file" href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
                         {% else %}
-                        <a class="link-file" href="{{ get_file_url(path)|safe }}" target="_new">
-                            <i class="fa {{ icons_by_mime[mimes[path]] }} fa-4x"></i><br>
-                            <span>{{ name }}</span>
-                        </a>
+                            <i class="fa {{ icons_by_mime[mimes[path]] }} fa-4x"></i>
+                            <a class="link-file" href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
                         {% endif %}  
                     {% endif %}
                 </div>
@@ -71,12 +69,17 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
+                {% if dir_path %}
+                <a class="navbar-brand" href="javascript:void()">/{{ dir_path.upper() }} ({{ count }})</a>
+                {% else %}
+                <a class="navbar-brand" href="javascript:void()">{{ admin_view.name.upper() }} ({{ count }})</a>
+                {% endif %}
             </div>
             <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-left">
+                {% block model_menu_bar %}
+                <ul class="nav navbar-nav">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">Presentation</a>
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-th fa-lg"></i>  Layout</a>
                         <ul class="dropdown-menu">
                             {% if dir_path %}
                             <li><a href="{{ url_for('.index', path=dir_path) }}">List</a></li>
@@ -87,25 +90,20 @@
                             {% endif %}
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">Filter</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">List</a></li>
-                            <li><a href="#">Icons</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a>Upload</a>
+                    <li class="actions">
+                        <a href="{{ get_dir_url('.upload', path=dir_path) }}"><i class="fa fa-download"></i>  Upload File</a>
                     </li>
-                    <li>
-                        <a>New directory</a>
+                    <li class="actions">
+                        <a><i class="fa fa-folder"></i>  New directory</a>
                     </li>
-                    <li>
-                        <a>Delete</a>
+                    <li class="actions">
+                        <a><i class="fa fa-trash-o"></i>  Delete</a>
                     </li>
+                    
                 </ul>
+                {% endblock %}
             </div>
         </div>
     </div>
@@ -125,12 +123,6 @@
                     $(this).toggleClass("selected");
                     return false;
                 }                
-            });
-            $(".files > div").dblclick(function () {
-                 if ($(this).find(".link-dir").length == 0)
-                {
-                    window.open($(this).find(".link-file").attr("href"));
-                }                   
             });
         })(jQuery);
     </script>

@@ -1,19 +1,24 @@
 {% extends 'admin/master.html' %}
 {% import 'shelf-admin/lib.html' as lib with context %}
+{% import 'shelf-admin/actions.html' as actionlib with context %}
 
 {% block body %}
     <div class="row" style="margin-top: 50px; background-color: #ffffff">
-        <div class="col-xs-12" style="border-bottom: 1px solid black;">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; padding-top: 5px; padding-left: 25px;">
+            {% if dir_path %}
+            <h1>/{{ dir_path.upper() }}</h1>
+            {% else %}
             <h1>{{ admin_view.name.upper() }}</h1>
+            {% endif %}
         </div>
-        <div class="col-xs-12"  style="padding-top: 25px">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; overflow: hidden">
         {% block file_list_table %}
-        <table class="table table-striped table-bordered model-list">
+        <table class="table model-list" style="border-top: 1px solid #ddd">
         	<thead>
 	            <tr>
 	                {% block list_header scoped %}
 	                {% if actions %}
-	                <th class="span1">
+	                <th class="span1 center" style="padding-left: 25px">
 	                    <input type="checkbox" name="rowtoggle" class="action-rowtoggle" />
 	                </th>
 	                {% endif %}
@@ -28,7 +33,7 @@
             <tr>
                 {% block list_row scoped %}
 	            {% if actions %}
-	            <td class="center">
+	            <td class="center" style="padding-left: 25px">
 	                {% if not is_dir %}
 	                <input type="checkbox" name="rowid" class="action-checkbox" value="{{ path }}" />
 	                {% endif %}
@@ -37,13 +42,13 @@
 	            
             {% if is_dir %}
             <td colspan="2">
-                <i style="width: 20px" class="fa fa-folder"></i> <a href="{{ get_dir_url('.index', path)|safe }}"><span>{{ name }}</span>
+                <i style="width: 20px" class="fa fa-folder"></i> <a href="{{ get_dir_url('.index', path)|safe }}"><span class="filename">{{ name }}</span>
                 </a>
             </td>
             {% else %}
             <td>
             	{% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
-            	<i style="width: 20px" class="fa {{ icons_by_mime[mimes[path]] }}"></i> <a href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span>
+            	<i style="width: 20px" class="fa {{ icons_by_mime[mimes[path]] }}"></i> <a href="{{ get_file_url(path)|safe }}" target="_new"><span class="filename">{{ name }}</span>
                 </a>
             </td>
             <td>
@@ -53,7 +58,7 @@
             <td class="center">
                 {% block list_row_actions scoped %}
                 {% if admin_view.can_rename and path and name != '..' %}
-                <a class="icon" href="{{ url_for('.rename', path=path) }}">
+                <a class="icon rename" href="{{ url_for('.rename', path=path) }}">
                         <i class="fa fa-pencil fa-lg"></i>
                 </a>
                 {% endif %}
@@ -86,6 +91,63 @@
         </div>
     </div>
 
+    {{ actionlib.form(actions, url_for('.action_view')) }}
+    <div class="modal fade" id="dir-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+                    <h1>NEW DIRECTORY</h1>
+                </div>
+                <div class="modal-body" style="padding: 0px; overflow: hidden">
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir') }}">
+                        <label for="name" class="control-label">Name</label>
+                            <input class="form-control" type="text" id="name" name="name" />
+                    </form>
+                    <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">                    
+                    <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580">
+                        <li class="actions validate">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
+                        </li>
+                        <li class="actions cancel">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-times"></i>  Cancel</a>
+                        </li>
+                        
+                    </ul>
+                    
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ren-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+                    <h1>RENAME</h1>
+                </div>
+                <div class="modal-body" style="padding: 0px; overflow: hidden">
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.rename') }}">
+                        <label for="name" class="control-label">Name</label>
+                            <input class="form-control" type="text" id="name" name="name" />
+                    </form>
+                    <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">                    
+                    <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580">
+                        <li class="actions validate">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
+                        </li>
+                        <li class="actions cancel">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-times"></i>  Cancel</a>
+                        </li>
+                        
+                    </ul>
+                    
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block bottom %}
@@ -97,41 +159,41 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
+                {% if dir_path %}
+                <a class="navbar-brand" href="javascript:void()">/{{ dir_path.upper() }} ({{ items|count }})</a>
+                {% else %}
+                <a class="navbar-brand" href="javascript:void()">{{ admin_view.name.upper() }} ({{ items|count }})</a>
+                {% endif %}
             </div>
             <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-left">
-                	<li class="dropdown">
-                		<a class="dropdown-toggle" data-toggle="dropdown">Presentation</a>
-                		<ul class="dropdown-menu">
-                			{% if dir_path %}
+                {% block model_menu_bar %}
+                {#<ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-th fa-lg"></i>  Layout</a>
+                        <ul class="dropdown-menu">
+                            {% if dir_path %}
                             <li><a href="{{ url_for('.index', path=dir_path) }}">List</a></li>
                             <li><a href="{{ url_for('.iconic_index', path=dir_path) }}">Icons</a></li>
                             {% else %}
                             <li><a href="{{ url_for('.index') }}">List</a></li>
                             <li><a href="{{ url_for('.iconic_index') }}">Icons</a></li>
                             {% endif %}
-                		</ul>
-                	</li>
-                	<li class="dropdown">
-                		<a class="dropdown-toggle" data-toggle="dropdown">Filter</a>
-                		<ul class="dropdown-menu">
-                			<li><a href="#">List</a></li>
-                			<li><a href="#">Icons</a></li>
-                		</ul>
-                	</li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                	<li>
-                        <a href="{{ get_dir_url('.upload', path=dir_path) }}">Upload File</a>
+                        </ul>
                     </li>
-                	<li>
-                		<a>New directory</a>
-                	</li>
-                	<li>
-                		<a>Delete</a>
-                	</li>
+                </ul>#}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="actions">
+                        <a href="{{ get_dir_url('.upload', path=dir_path) }}"><i class="fa fa-download"></i>  Upload File</a>
+                    </li>
+                    <li class="actions new">
+                        <a href="javascript:void(0)"><i class="fa fa-folder"></i>  New directory</a>
+                    </li>
+                    <li class="actions">
+                        <a href="javascript:void(0)" onclick="return modelActions.execute('{{ actions[0][0] }}');"><i class="fa fa-trash-o"></i>  {{ _gettext(actions[0][1]) }}</a>
+                    </li>
+                    
                 </ul>
+                {% endblock %}
             </div>
         </div>
     </div>
@@ -140,11 +202,71 @@
 {% block tail %}
     {{ super() }}
     <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
-    <script src="{{ url_for('admin.static', filename='admin/js/form.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='shelf-admin/js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
 
-    <script language="javascript">
+    {{ actionlib.script(_gettext('Please select at least one model.'),
+                      actions,
+                      actions_confirmation) }}
+
+     <script language="javascript">
         (function($) {
+            $('[data-role=tooltip]').tooltip({
+                html: true,
+                placement: 'bottom'
+            });
+           
+            $('.navbar-fixed-bottom .dropdown-menu').click(function (e) {
+                e.stopPropagation();
+            });
+
+            $('.navbar-fixed-bottom .filter-menu > .dropdown-menu a').click(function (e) {
+                var target = $(e.currentTarget).parent();
+                if (target.hasClass('active'))
+                {
+                    target.removeClass('active');
+                }
+                else
+                {
+                    target.addClass('active');
+                }
+            });
+
+            $('.model-list tbody input.action-checkbox').change(function (e) {
+                var parent = $(this).closest('tr');
+                parent.toggleClass('selected');
+            });
+
+            $('li.actions.new').click(function () {
+                $('#dir-modal').modal('show');
+            });
+
+            $('.model-list thead input.action-rowtoggle').change(function (e) {
+                $('.model-list tbody tr').toggleClass('selected');
+            });
+
+            $('.modal li.actions.cancel').click(function() {
+                $(this).closest('.modal').modal('hide');
+            });
+
+            $('.modal li.actions.validate').click(function() {
+                $(this).closest('.modal').modal('hide');
+                $(this).closest('.modal').find('form').submit();
+            });
+
+            $('a.rename').click(function(event)
+            {
+                event.preventDefault();
+                event.stopPropagation();
+                $('#ren-modal').modal('show');
+                $('#ren-modal input#name').val($(this).closest('tr').find('span.filename').html());
+                {% if dir_path %}                    
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path={{ dir_path }}/" + $(this).closest('tr').find('span.filename').html());
+                {% else %}
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path=" + $(this).closest('tr').find('span.filename').html());
+                {% endif %}
+                
+            })
         })(jQuery);
     </script>
 {% endblock %}

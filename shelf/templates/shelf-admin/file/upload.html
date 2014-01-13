@@ -2,112 +2,68 @@
 {% import 'shelf-admin/lib.html' as lib with context %}
 
 {% block body %}
-    <h1>UPLOAD FILES</h1>
     <div class="row" style="margin-top: 50px; background-color: #ffffff">
-        <div class="col-xs-12" style="border-bottom: 1px solid black;">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; padding-top: 5px; padding-left: 25px;">
+            {% if dir_path %}
+            <h1>/{{ dir_path }}</h1>
+            {% else %}
             <h1>{{ admin_view.name.upper() }}</h1>
+            {% endif %}
         </div>
-        <div class="col-xs-12"  style="padding-top: 25px; padding-bottom: 20px">
-                <form role="form" method="post" enctype="multipart/form-data" id="dropfile"  style="background-color: black; padding: 10px">
-                    <div class="form-group" style="text-align: center">
-                        <i class="fa fa-arrow-circle-down"></i><br>
-                        <label for="file">Déposer ou charger depuis votre ordinateur</label>
-                        <input type="file" name="file" id="file" size="chars">
-                        
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; overflow: hidden">
+                <form role="form" method="post" enctype="multipart/form-data" id="dropfile"  style="background-color: black;">
+                    <div class="form-group" style="text-align: center; margin-bottom: 0px; padding: 10px; background: url({{ url_for('shelf.static', filename='shelf-admin/img/motif_up.png') }}); color: #fff">
+                        <i class="fa fa-arrow-circle-down fa-2x"></i><br><br>
+                        <input type="file" name="upload" id="upload" size="chars" style="margin-left: auto; margin-right: auto"><br>
+                        <label for="file">Drag file or upload from your harddrive</label>
                     </div>
                 </form>
         </div>
     </div>
-    <div class="row" style="margin-top: 50px; background-color: #ffffff">
+    <div class="row" style="margin-top: 50px; background-color: #ffffff; display: none" id="files-uploading">
         <div class="col-xs-12" style="border-bottom: 1px solid black;">
             <h1>UPLOADING...</h1>
          </div>    
-         <div class="col-xs-12"  style="padding-top: 25px">   
+         <div class="col-xs-12"  style="padding-top: 25px">  
+                <div id="example-file" style="display: none">
+                    <li class="media" style="border-top: 1px solid #ddd; padding-top: 10px">
+                        <p class="pull-left" style="padding-top: 5px">
+                          <i class="media-object fa fa-picture-o fa-2x" style="width: 50px"></i>
+                        </p>
+                        <div class="media-body">
+                            <h4 class="media-heading"><span class="title">machin.png</span>
+                            <p class="pull-right">
+                                <i class="fa fa-times fa-lg"></i>
+                            </p>
+                        </h4>
+                            <div class="progress progress-striped active" style="height: 6px; width: 100%">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                                    <span class="sr-only">0% Complete</span>
+                                </div>                                    
+                            </div>
+                            
+                            <div class="clearfix"></div>
+                        </div>
+                    </li>
+                </div>
+
+
                 <ul class="media-list">
-                  <li class="media">
-                    <p class="pull-left" style="padding-top: 5px">
-                      <i class="media-object fa fa-list fa-2x" style="width: 50px"></i>
-                    </a>
+                  <li class="media" id="main-progress">
                     <div class="media-body">
-                      <h4 class="media-heading">Tous</h4>
-                        <div class="progress progress-striped active" style="height: 10px; width: 50%">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 90%;">
-                            <span class="sr-only">60% Complete</span>
+                      <h4 class="media-heading"><span class="title">Tous</span>
+                            <p class="pull-right">
+                                <i class="fa fa-times fa-lg"></i>
+                            </p>
+                        </h4>
+                        <div class="progress progress-striped active" style="height: 6px; width: 100%">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                            <span class="sr-only">0% Complete</span>
                             </div>
                         </div>
-                        <p class="pull-right">
-                                        <i class="fa fa-times-circle fa-lg"></i>
-                                    </p>
                         <div class="clearfix"></div>
-                        <ul class="media-list">
-                            <li class="media">
-                                <p class="pull-left" style="padding-top: 5px">
-                                  <i class="media-object fa fa-picture-o fa-2x" style="width: 50px"></i>
-                                </p>
-                                <div class="media-body">
-                                  <h4 class="media-heading">machin.png</h4>
-                                    <div class="progress progress-striped active" style="height: 10px; width: 50%">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>                                    
-                                    </div>
-                                    <p class="pull-right">
-                                        <i class="fa fa-times-circle fa-lg"></i>
-                                    </p>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </li>
-                            <li class="media">
-                                <p class="pull-left" style="padding-top: 5px">
-                                  <i class="media-object fa fa-file-text fa-2x" style="width: 50px"></i>
-                                </p>
-                                <div class="media-body">
-                                  <h4 class="media-heading">machin.pdf</h4>
-                                    <div class="progress progress-striped active" style="height: 10px; width: 50%">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>                                    
-                                    </div>
-                                    <p class="pull-right">
-                                        <i class="fa fa-times-circle fa-lg"></i>
-                                    </p>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </li>
-                            <li class="media">
-                                <p class="pull-left" style="padding-top: 5px">
-                                  <i class="media-object fa fa-film fa-2x" style="width: 50px"></i>
-                                </p>
-                                <div class="media-body">
-                                  <h4 class="media-heading">machin.mov</h4>
-                                    <div class="progress progress-striped active" style="height: 10px; width: 50%">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>                                    
-                                    </div>
-                                    <p class="pull-right">
-                                        <i class="fa fa-times-circle fa-lg"></i>
-                                    </p>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </li>
-                            <li class="media">
-                                <p class="pull-left" style="padding-top: 5px">
-                                  <i class="media-object fa fa-save fa-2x" style="width: 50px"></i>
-                                </p>
-                                <div class="media-body">
-                                  <h4 class="media-heading">machin.zip</h4>
-                                    <div class="progress progress-striped active" style="height: 10px; width: 50%">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                            <span class="sr-only">60% Complete</span>
-                                        </div>                                    
-                                    </div>
-                                    <p class="pull-right">
-                                        <i class="fa fa-times-circle fa-lg"></i>
-                                    </p>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </li>
+                        <ul class="media-list" id="files-list">
+                        
                         </ul>
                     </div>
                   </li>
@@ -126,38 +82,32 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
+                {% if dir_path %}
+                <a class="navbar-brand" href="javascript:void()">/{{ dir_path.upper() }} ({{ items|count }})</a>
+                {% else %}
+                <a class="navbar-brand" href="javascript:void()">{{ admin_view.name.upper() }} ({{ items|count }})</a>
+                {% endif %}
             </div>
             <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-left">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">Presentation</a>
-                        <ul class="dropdown-menu">
-                            {% if dir_path %}
-                            <li><a href="{{ url_for('.index', path=dir_path) }}">List</a></li>
-                            <li><a href="{{ url_for('.iconic_index', path=dir_path) }}">Icons</a></li>
-                            {% else %}
-                            <li><a href="{{ url_for('.index') }}">List</a></li>
-                            <li><a href="{{ url_for('.iconic_index') }}">Icons</a></li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown">Filter</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">List</a></li>
-                            <li><a href="#">Icons</a></li>
-                        </ul>
-                    </li>
-                </ul>
+                {% block model_menu_bar %}
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a>Validate</a>
+                    {% if dir_path %}
+                    <li class="actions validate">
+                        <a href="{{ url_for('.index', path=dir_path) }}"><i class="fa fa-check"></i>  Validate</a>
                     </li>
-                    <li>
-                        <a>Cancel</a>
+                    <li class="actions cancel">
+                        <a href="{{ url_for('.index', path=dir_path) }}"><i class="fa fa-times"></i>  Cancel</a>
+                    </li>       
+                    {% else %}
+                    <li class="actions validate">
+                        <a href="{{ url_for('.index') }}"><i class="fa fa-check"></i>  Validate</a>
                     </li>
+                    <li class="actions cancel">
+                        <a href="{{ url_for('.index') }}"><i class="fa fa-times"></i>  Cancel</a>
+                    </li> 
+                    {% endif %}             
                 </ul>
+                {% endblock %}
             </div>
         </div>
     </div>
@@ -166,64 +116,165 @@
 {% block tail %}
     {{ super() }}
     <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
-    <script src="{{ url_for('admin.static', filename='admin/js/form.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='shelf-admin/js/form.js') }}"></script>
     <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
 
     <script language="javascript">
-            function upload(files) {
-                 var f = files[0] ;
-                 // Only process image files.
-                 if (!f.type.match('image/jpeg')) {
-                    alert('The file must be a jpeg image') ;
-                    return false ;
-                 }
+        (function($) {
+            var documents = [] // 1 elem au format {'file', 'path', 'size', 'uploaded', 'extension', 'el'}
+            var timer = undefined;
 
-                 var reader = new FileReader();
-              
-                 // When the image is loaded,
-                 // run handleReaderLoad function
-                 reader.onload = function (evt) {
-                    var pic = {};
-                    pic.file = evt.target.result.split(',')[1];
-                    //pic.filename = evt.target.result.split(',')[0];
-                    alert(f.name);
-                    var str = jQuery.param(pic);
-                 
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{ url_for(".async_upload") }}',
-                        data: str,
-                        success: function(data) {
-                            alert('yes') ;
-                        }
-                    });
-                 }
-              
-                 // Read in the image file as a data URL.
-                 reader.readAsDataURL(f);            
+            function updateProgressBar(el, loaded, total)
+            {
+                var percent = (loaded * 100.0) / total;
+                el.find('.progress-bar').width(percent+'%');
+                el.find('.progress-bar').attr({'aria-valuenow': loaded, 'aria-valuemax': total});
             }
 
-        (function($) {
+            function updateTotalBar()
+            {
+                var total = 0; 
+                var loaded = 0;
+
+                for (var i in documents)
+                {
+                    total += documents[i]['size'];
+                    loaded += documents[i]['uploaded'];
+                }
+
+                if (total == loaded)
+                {
+                    $('#main-progress .media-heading i').removeClass('fa-times');
+                    $('#main-progress .media-heading i').addClass('fa-check');
+                    $('#main-progress').find('.progress').removeClass('active');
+                    $('#main-progress').find('.progress').removeClass('progress-striped');
+                }
+                else
+                {
+                    $('#main-progress .media-heading i').addClass('fa-times');
+                    $('#main-progress .media-heading i').removeClass('fa-check');
+                    $('#main-progress').find('.progress').addClass('active');
+                    $('#main-progress').find('.progress').addClass('progress-striped');
+                }
+
+                updateProgressBar($('#main-progress'), loaded, total);
+            }
+
+            function upload(files) {
+                for (var j=0; j < files.length; j++)
+                {
+                     // Only process image files.
+                     /*if (!f.type.match('image/jpeg')) {
+                        alert('The file must be a jpeg image') ;
+                        return false ;
+                     }*/
+
+                     var reader = new FileReader();
+                     var f = files[j];
+
+                     reader.onprogress = (function(f) {
+                        return function(evt) {
+                            for (var i in documents)
+                            {
+                                if (documents[i]['file'] == f.name)
+                                {                       
+                                    if (evt.lengthComputable)
+                                    {
+                                        documents[i]['uploaded'] = evt.loaded;
+                                        documents[i]['size'] = evt.total; 
+                                    }
+
+                                    if (documents[i]['el'] == undefined)
+                                    {
+                                        var item = $('#example-file').html();
+                                        $('#files-list').prepend(item);
+                                        documents[i]['el'] = $('#files-list li').first();
+                                        documents[i]['el'].find('.media-heading .title').html(f.name);
+                                        $('#files-uploading').show();
+                                    }
+                                    updateProgressBar(documents[i]['el'], evt.loaded, evt.total);
+                                    updateTotalBar();
+                                    break;
+                                }
+                            }
+                        };
+                     })(files[j]);
+                  
+                    reader.onload = (function(f) {
+                        return function (evt) {
+                            var pic = {};
+                            pic.file = evt.target.result.split(',')[1];
+                            pic.path = "{{ dir_path }}";
+                            pic.name = f.name;
+                            //pic.filename = evt.target.result.split(',')[0];
+
+                            var str = jQuery.param(pic);
+                            console.log(evt.target.result);
+
+                            console.log(documents, f.name);
+
+                            for (var i in documents)
+                            {
+                                if (documents[i]['file'] == f.name)
+                                {                    
+                                    console.log(f.name, documents[i]['el']);   
+                                    if (documents[i]['el'] == undefined)
+                                    {
+
+                                        var item = $('#example-file').html();
+                                        $('#files-list').prepend(item);
+                                        documents[i]['el'] = $('#files-list li').first();
+                                        documents[i]['el'].find('.media-heading .title').html(fname);
+                                    }
+                                    $('#files-uploading').show();
+                                    updateProgressBar(documents[i]['el'], evt.loaded, evt.total);
+                                    documents[i]['el'].find('.media-heading i').removeClass('fa-times');
+                                    documents[i]['el'].find('.media-heading i').addClass('fa-check');
+                                    documents[i]['el'].find('.progress').removeClass('active');
+                                    documents[i]['el'].find('.progress').removeClass('progress-striped');
+                                    break;
+                                }
+                            }
+                            updateTotalBar();
+                         
+                            /*$.ajax({
+                                type: 'POST',
+                                url: '{{ url_for(".async_upload") }}',
+                                data: str,
+                                success: function(data) {
+                                    //alert('yes') ;
+                                }
+                            });*/
+                        };
+                    })(files[j]);
+                  
+                    reader.readAsDataURL(f);
+                }
+            }
+
             $(document).on('dragenter', '#dropfile', function() {
-                $(this).css('border', '3px dashed red');
+                $(this).css('background-color', 'green');
                 return false;
             });
              
             $(document).on('dragover', '#dropfile', function(e){
                 e.preventDefault();
                 e.stopPropagation();
-                $(this).css('border', '3px dashed red');
+                $(this).css('background-color', 'green');
                 return false;
             });
              
             $(document).on('dragleave', '#dropfile', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                $(this).css('border', '3px dashed #BBBBBB');
+                $(this).css('background-color', 'black');
                 return false;
             });
 
-            
+            $('li.actions.validate').click(function () {
+                $('#dropfile').submit();
+                event.preventDefault();
+            });
 
             $(document).on('drop', '#dropfile', function(e) {
                 if(e.originalEvent.dataTransfer){
@@ -231,14 +282,30 @@
                        // Stop the propagation of the event
                        e.preventDefault();
                        e.stopPropagation();
-                       $(this).css('border', '3px dashed green');
+                       $(this).css('background-color', 'black');
+
+                       if (timer == undefined)
+                       {
+                            for (var i=0; i < e.originalEvent.dataTransfer.files.length; i++)
+                            {
+                                var currentfile = e.originalEvent.dataTransfer.files[i];
+
+                                console.log(currentfile.name);
+
+                                documents.push({'file': currentfile.name, 'size': currentfile.size, 'uploaded': 0, 'type': currentfile.type, 'el': undefined});
+                            }
+                            
+
+                            updateTotalBar();
+                       }
+
                        // Main function to upload
                        upload(e.originalEvent.dataTransfer.files);
                     }  
                 }
                 else 
                 {
-                    $(this).css('border', '3px dashed #BBBBBB');
+                    $(this).css('background-color', 'black');
                 }
                 return false;
             });

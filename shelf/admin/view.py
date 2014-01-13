@@ -1,7 +1,7 @@
 from flask_admin.contrib import sqla, fileadmin
 from flask.ext.admin.base import expose
 
-from shelf.admin.form.fields import LocalizedTextField, WysiwygTextField, LocalizedWysiwygTextField, RemoteFileField
+from shelf.admin.form.fields import LocalizedTextField, WysiwygTextField, LocalizedWysiwygTextField, RemoteFileField, PictureField
 from shelf.model.base import shelf_computed_models
 
 import os
@@ -15,6 +15,7 @@ from base64 import b64decode
 
 from jinja2 import contextfunction
 from flask.ext.admin.contrib.sqla import form
+from flask.ext.admin.contrib.fileadmin import UploadForm, NameForm
 from flask.ext.admin.model.helpers import get_mdict_item_or_list
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
 from flask.ext.admin.form import BaseForm, rules, get_form_opts
@@ -25,8 +26,11 @@ from flask.ext.admin.contrib.sqla.tools import is_inherited_primary_key, get_col
 from wtforms.fields import HiddenField
 
 from flask import redirect, flash
+from flask.ext.admin import form, helpers
 
 from flask.ext.admin.babel import gettext, lazy_gettext
+
+from werkzeug import secure_filename
 
 class ShelfModelView(sqla.ModelView):
     list_template = "shelf-admin/model/list.html"
@@ -53,6 +57,9 @@ class ShelfModelView(sqla.ModelView):
         if isinstance(getattr(model, name), shelf_computed_models()['LocalizedString']) \
               or isinstance(getattr(model, name), shelf_computed_models()['LocalizedText']):
             return getattr(model, name).value
+        if isinstance(getattr(model, name), shelf_computed_models()['RemoteFile']) \
+              or isinstance(getattr(model, name), shelf_computed_models()['Picture']):
+            return getattr(model, name).path
         return super(ShelfModelView, self).get_list_value(context, model, name)
 
     @action('delete',
@@ -169,6 +176,9 @@ class ShelfModelView(sqla.ModelView):
                 elif 'RemoteFile' in shelf_computed_models() \
                     and issubclass(v.mapper.class_, shelf_computed_models()['RemoteFile']):
                         setattr(cls, k, RemoteFileField())
+                elif 'Picture' in shelf_computed_models() \
+                    and issubclass(v.mapper.class_, shelf_computed_models()['Picture']):
+                        setattr(cls, k, PictureField())
 
         return cls
 
@@ -230,11 +240,108 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
     @expose('/asyncupload', methods=("POST",))
     def async_upload(self):
         mfile = request.form['file']
+        mname = request.form['name']
+        mpath = request.form['path']
+        ffile = op.join(self._normalize_path(mpath)[1], mname)
         encoded = mfile.replace(' ', '+')
         decoded = b64decode(encoded)
-        with open('tmp.jpg', 'w') as f:
+        with open(ffile, 'w') as f:
             f.write(decoded)
         return "True"
+
+    @action('delete',
+            lazy_gettext('Delete'),
+            lazy_gettext('Are you sure you want to delete these files?'))
+    def action_delete(self, items):
+        print "lololo"
+        if not self.can_delete:
+            flash(gettext('File deletion is disabled.'), 'error')
+            return
+
+        for path in items:
+            base_path, full_path, path = self._normalize_path(path)
+
+            if self.is_accessible_path(path):
+                try:
+                    os.remove(full_path)
+                    flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+                except Exception as ex:
+                    flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
+
+    @expose('/mkdir/', methods=('GET', 'POST'))
+    @expose('/mkdir/<path:path>', methods=('GET', 'POST'))
+    def mkdir(self, path=None):
+        """
+            Directory creation view method
+
+            :param path:
+                Optional directory path. If not provided, will use the base directory
+        """
+        # Get path and verify if it is valid
+        base_path, directory, path = self._normalize_path(path)
+
+        dir_url = self._get_dir_url('.index', path)
+
+        if not self.can_mkdir:
+            flash(gettext('Directory creation is disabled.'), 'error')
+            return redirect(dir_url)
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
+        form = NameForm(helpers.get_form_data())
+        print form, helpers.validate_form_on_submit(form), form.data
+
+        if helpers.validate_form_on_submit(form):
+            try:
+                os.mkdir(op.join(directory, form.name.data))
+                self.on_mkdir(directory, form.name.data)
+                flash('Directory '+form.name.data+' created.')
+                return redirect(dir_url)
+            except Exception as ex:
+                flash(gettext('Failed to create directory: %(error)s', ex), 'error')
+
+        return redirect(dir_url)
+
+    @expose('/upload/', methods=('GET', 'POST'))
+    @expose('/upload/<path:path>', methods=('GET', 'POST'))
+    def upload(self, path=None):
+        """
+            Upload view method
+
+            :param path:
+                Optional directory path. If not provided, will use the base directory
+        """
+        # Get path and verify if it is valid
+        base_path, directory, path = self._normalize_path(path)
+
+        if not self.can_upload:
+            flash(gettext('File uploading is disabled.'), 'error')
+            return redirect(self._get_dir_url('.index', path))
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
+        form = UploadForm(self)
+        #print form, helpers.validate_form_on_submit(form), form.data
+        if helpers.validate_form_on_submit(form):
+            filename = op.join(directory,
+                               secure_filename(form.upload.data.filename))
+
+            if op.exists(filename):
+                flash(gettext('File "%(name)s" already exists.', name=filename),
+                      'error')
+            else:
+                try:
+                    self.save_file(filename, form.upload.data)
+                    self.on_file_upload(directory, path, filename)
+                    return redirect(self._get_dir_url('.index', path))
+                except Exception as ex:
+                    flash(gettext('Failed to save file: %(error)s', error=ex))
+
+        return self.render(self.upload_template, form=form, dir_path=path)
 
     @expose('/modal-icons/')
     @expose('/modal-icons/b/<path:path>')
@@ -415,7 +522,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
             fp = op.join(directory, f)
             rel_path = op.join(path, f)
 
-            if self.is_accessible_path(rel_path):
+            if self.is_accessible_path(rel_path) and not f.startswith('.'):
                 items.append((f, rel_path, op.isdir(fp), op.getsize(fp)))
                 mimes[rel_path] = 'other'
                 for mime in mime_by_ext:
@@ -486,7 +593,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
             fp = op.join(directory, f)
             rel_path = op.join(path, f)
 
-            if self.is_accessible_path(rel_path):
+            if self.is_accessible_path(rel_path) and not f.startswith('.'):
                 items.append((f, rel_path, op.isdir(fp), op.getsize(fp)))
                 mimes[rel_path] = 'other'
                 for mime in mime_by_ext:
