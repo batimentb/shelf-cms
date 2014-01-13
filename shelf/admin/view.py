@@ -14,7 +14,7 @@ from sqlalchemy.types import Text
 from base64 import b64decode
 
 from jinja2 import contextfunction
-from flask.ext.admin.contrib.sqla import form
+from flask.ext.admin.contrib.sqla import form as contribform
 from flask.ext.admin.contrib.fileadmin import UploadForm, NameForm
 from flask.ext.admin.model.helpers import get_mdict_item_or_list
 from flask.ext.admin.helpers import get_form_data, validate_form_on_submit
@@ -54,11 +54,11 @@ class ShelfModelView(sqla.ModelView):
 
     @contextfunction
     def get_list_value(self, context, model, name):
-        if isinstance(getattr(model, name), shelf_computed_models()['LocalizedString']) \
-              or isinstance(getattr(model, name), shelf_computed_models()['LocalizedText']):
+        if ('LocalizedString' in shelf_computed_models() and isinstance(getattr(model, name), shelf_computed_models()['LocalizedString'])) \
+              or ('LocalizedText' in shelf_computed_models() and isinstance(getattr(model, name), shelf_computed_models()['LocalizedText'])):
             return getattr(model, name).value
-        if isinstance(getattr(model, name), shelf_computed_models()['RemoteFile']) \
-              or isinstance(getattr(model, name), shelf_computed_models()['Picture']):
+        if ('RemoteFile' in shelf_computed_models() and isinstance(getattr(model, name), shelf_computed_models()['RemoteFile'])) \
+              or ('Picture' in shelf_computed_models() and isinstance(getattr(model, name), shelf_computed_models()['Picture'])):
             return getattr(model, name).path
         return super(ShelfModelView, self).get_list_value(context, model, name)
 
@@ -197,7 +197,7 @@ class ShelfPageView(ShelfModelView):
             Override to implement custom behavior.
         """
         converter = self.model_form_converter(self.session, self)
-        cls = form.get_form(obj.__class__, converter,
+        cls = contribform.get_form(obj.__class__, converter,
                                    base_class=self.form_base_class,
                                    only=self.form_columns,
                                    exclude=self.form_excluded_columns,
