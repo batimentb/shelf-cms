@@ -128,7 +128,7 @@ class Page(db.Model):
 	}
 
 
-def register_page(model, db, name=None):
+def register_page(model, db, name=None, view=None):
 	params = {}
 	for k, v in model.__dict__.items():
 		if k.startswith('_'):

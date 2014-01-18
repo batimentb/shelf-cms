@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ url_for('shelf.static', filename='shelf-admin/css/login.css') }}">
+        <link href="{{ url_for('shelf.static', filename='shelf-admin/css/bootstrap.min.css') }}" rel="stylesheet" media="screen">
+      <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+      <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+      <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+      <![endif]-->
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
+    </head>
+
+    <body style="background: url({{ url_for('shelf.static', filename='shelf-admin/img/geometry.png') }})">
+        <div class="row" style="height: 50%; margin-bottom: -100px">
+        </div>
+        <div class="row">
+          <div style="width: 270px; margin-left: auto; margin-right: auto">
+            <h1>WELCOME</h1>
+            <form class="form-horizontal" role="form" action="" method="POST">
+              {{ form.csrf_token }}
+              <input type="email" class="form-control" name="email" id="email" placeholder="Email">
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+              <button style="width: 100%" type="submit" class="btn btn-default">Sign in</button>
+            </form>
+          </div>
+        </div>
+        
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+       
+        <script src="{{ url_for('shelf.static', filename='shelf-admin/js/bootstrap.min.js') }}"></script>
+    </body>
+</html>

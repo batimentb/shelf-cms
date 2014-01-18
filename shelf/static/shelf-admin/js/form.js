@@ -169,6 +169,13 @@
 
         // Apply styles
         this.applyGlobalStyles($template);
+
+        $('.wysiwyg', $template).each(function (e) {
+          $(this).wysihtml5({
+                html: true,
+            });     
+        });
+        
       };
 
       /**

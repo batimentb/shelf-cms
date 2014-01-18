@@ -75,7 +75,15 @@
 
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, set_focus=False, kwargs={}) %}
-    <div class="form-group {% if field.errors %}has-error{% endif %} col-lg-{% if field.type == "LocalizedWysiwygTextField" %}12{% else %}6{% endif %}" style="display: inline-block">
+    {% if field.type == "ShelfInlineModelFormList" %}
+    <div class="col-lg-12" style="padding-left: 0; padding-right: 0; display: inline-block">
+        <p>{{ field.label.text }}</p>
+        <div class="well">
+          {{ field(**kwargs)|safe }}
+        </div>
+    </div>
+    {% else %}
+    <div class="form-group {% if field.errors %}has-error{% endif %} col-lg-{% if field.type == "LocalizedWysiwygTextField" or field.type == "WysiwygTextField" %}12{% else %}6{% endif %}" style="display: inline-block">
         <label for="field.name">{{ field.label.text }}</label>
         <div>
           {% if set_focus %}
@@ -85,6 +93,7 @@
           {% endif %}
         </div>
     </div>
+    {% endif %}
   {#<div class="control-group{{ ' error' if field.errors else '' }}">
     <div class="control-label">
       {{ field.label.text }}

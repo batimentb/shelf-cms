@@ -11,6 +11,8 @@ from operator import itemgetter
 from flask import request, url_for
 from sqlalchemy.types import Text
 
+from sqlalchemy.sql.expression import desc
+
 from base64 import b64decode
 
 from jinja2 import contextfunction
@@ -32,10 +34,95 @@ from flask.ext.admin.babel import gettext, lazy_gettext
 
 from werkzeug import secure_filename
 
+from flask_login import login_required
+
 class ShelfModelView(sqla.ModelView):
     list_template = "shelf-admin/model/list.html"
     create_template = "shelf-admin/model/create.html"
     edit_template = "shelf-admin/model/edit.html"
+
+    def _order_by(self, query, joins, sort_field, sort_desc):
+        """
+            Apply order_by to the query
+
+            :param query:
+                Query
+            :param joins:
+                Joins set
+            :param sort_field:
+                Sort field
+            :param sort_desc:
+                Ascending or descending
+        """
+
+        try:
+            if issubclass(sort_field.mapper.class_, shelf_computed_models()['LocalizedString']):
+                table = sort_field.mapper.tables[0]
+
+                query = query.outerjoin(str(sort_field).split('.')[1])
+                joins.add(table.name)
+
+                if sort_desc:
+                    query = query.order_by(desc(shelf_computed_models()['LocalizedString'].value))
+                else:
+                    query = query.order_by(shelf_computed_models()['LocalizedString'].value)
+
+                return query, joins
+        except:
+            pass
+
+        try:
+            if issubclass(sort_field.mapper.class_, shelf_computed_models()['RemoteFile']):
+                table = sort_field.mapper.tables[0]
+
+                query = query.outerjoin(str(sort_field).split('.')[1])
+                joins.add(table.name)
+
+                if sort_desc:
+                    query = query.order_by(desc(shelf_computed_models()['RemoteFile'].path))
+                else:
+                    query = query.order_by(shelf_computed_models()['RemoteFile'].path)
+
+                return query, joins
+        except:
+            pass
+
+        try:
+            if issubclass(sort_field.mapper.class_, shelf_computed_models()['Picture']):
+                table = sort_field.mapper.tables[0]
+
+                query = query.outerjoin(str(sort_field).split('.')[1])
+                joins.add(table.name)
+
+                if sort_desc:
+                    query = query.order_by(desc(shelf_computed_models()['Picture'].path))
+                else:
+                    query = query.order_by(shelf_computed_models()['Picture'].path)
+
+                return query, joins
+        except:
+            pass
+
+        query, joins = super(ShelfModelView, self)._order_by(query, joins, sort_field, sort_desc)
+        return query, joins
+
+    def scaffold_sortable_columns(self):
+        """
+            Return a dictionary of sortable columns.
+            Key is column name, value is sort column/field.
+        """
+        columns = super(ShelfModelView, self).scaffold_sortable_columns()
+
+        for k, v in self.model.__dict__.items():
+            if hasattr(v, "mapper"):
+                if 'LocalizedString' in shelf_computed_models() and issubclass(v.mapper.class_, shelf_computed_models()['LocalizedString']):
+                   columns[k] = v
+                if 'Picture' in shelf_computed_models() and issubclass(v.mapper.class_, shelf_computed_models()['Picture']):
+                   columns[k] = v
+                if 'RemoteFile' in shelf_computed_models() and issubclass(v.mapper.class_, shelf_computed_models()['RemoteFile']):
+                   columns[k] = v
+
+        return columns
 
     def after_model_change(self, form, model, is_created):
         if is_created:
@@ -92,7 +179,13 @@ class ShelfModelView(sqla.ModelView):
 
             flash(gettext('Failed to delete models. %(error)s', error=str(ex)), 'error')
 
+    @expose('/')
+    @login_required
+    def index_view(self):
+        return super(ShelfModelView, self).index_view()
+
     @expose('/new/', methods=('GET', 'POST'))
+    @login_required
     def create_view(self):
         """
             Create model view
@@ -120,7 +213,9 @@ class ShelfModelView(sqla.ModelView):
                            form_rules=self._form_create_rules,
                            return_url=return_url)
 
+    
     @expose('/edit/', methods=('GET', 'POST'))
+    @login_required
     def edit_view(self):
         """
             Edit model view
@@ -189,6 +284,11 @@ class ShelfPageView(ShelfModelView):
     can_delete = False
 
     edit_template = "shelf-admin/page/edit.html"
+
+    pages_form = {}
+
+    def register_form(self, cls, form):
+        self.pages_form[cls] = form
     
     def edit_form(self, obj=None):
         """
@@ -196,6 +296,12 @@ class ShelfPageView(ShelfModelView):
 
             Override to implement custom behavior.
         """
+        if not obj:
+            raise ValueError
+
+        if obj.__class__ in self.pages_form:
+            return self.pages_form[obj.__class__](get_form_data(), obj=obj)
+
         converter = self.model_form_converter(self.session, self)
         cls = contribform.get_form(obj.__class__, converter,
                                    base_class=self.form_base_class,
@@ -227,6 +333,7 @@ class ShelfPageView(ShelfModelView):
         return cls(get_form_data(), obj=obj)
 
     def update_model(self, form, model):
+        print form.faqs
         return super(ShelfPageView, self).update_model(form, model)
 
 
