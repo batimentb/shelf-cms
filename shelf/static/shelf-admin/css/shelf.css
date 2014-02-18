@@ -602,6 +602,11 @@ a:hover {
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
 
+textarea.wysiwyg {
+  width: 100%;
+  height: 300px;
+}
+
 #wrap > .container {
   padding: 60px 15px 0;
 }
