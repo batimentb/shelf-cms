@@ -1,5 +1,5 @@
 from flask.ext.admin import Admin
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, flash
 
 from flask.ext.admin.base import expose, AdminIndexView
 import wtforms
@@ -32,6 +32,11 @@ class ShelfIndexView(AdminIndexView):
         if form.validate_on_submit():
             user = User()
             user.id = u"1"
+
+            if form.password.data != "SigfoxWeb!31":
+                flash("Bad email/password", "error")
+                return render_template("shelf-admin/login.html", form=form)
+
             login_user(user)
             #flash("Logged in successfully.")
             print "REDIRECT TO:", request.args.get("next")

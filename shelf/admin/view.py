@@ -333,7 +333,6 @@ class ShelfPageView(ShelfModelView):
         return cls(get_form_data(), obj=obj)
 
     def update_model(self, form, model):
-        print form.faqs
         return super(ShelfPageView, self).update_model(form, model)
 
 
@@ -345,6 +344,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
     modal_iconic_template = "shelf-admin/file/modal-iconic.html"
 
     @expose('/asyncupload', methods=("POST",))
+    @login_required
     def async_upload(self):
         mfile = request.form['file']
         mname = request.form['name']
@@ -360,7 +360,6 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
             lazy_gettext('Delete'),
             lazy_gettext('Are you sure you want to delete these files?'))
     def action_delete(self, items):
-        print "lololo"
         if not self.can_delete:
             flash(gettext('File deletion is disabled.'), 'error')
             return
@@ -377,6 +376,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
 
     @expose('/mkdir/', methods=('GET', 'POST'))
     @expose('/mkdir/<path:path>', methods=('GET', 'POST'))
+    @login_required
     def mkdir(self, path=None):
         """
             Directory creation view method
@@ -413,6 +413,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
+    @login_required
     def upload(self, path=None):
         """
             Upload view method
@@ -452,6 +453,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
 
     @expose('/modal-icons/')
     @expose('/modal-icons/b/<path:path>')
+    @login_required
     def modal_iconic_index(self, path=None):
         """
             Index view method
@@ -471,7 +473,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
         mimes = {}
         mime_by_ext = {'text': ('.pdf', '.txt', '.doc', '.html', '.xml', '.css'),
                         'archive': ('.zip',),
-                        'image': ('.png', '.jpg', '.jpeg'),
+                        'image': ('.png', '.jpg', '.jpeg', '.gif'),
                         'video': ('.mpg', '.mpeg', '.wmv', '.mp4', '.flv', '.mov')
                         }
 
@@ -523,6 +525,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
 
     @expose('/modal/')
     @expose('/modal/b/<path:path>')
+    @login_required
     def modal_index(self, path=None):
         """
             Index view method
@@ -542,7 +545,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
         mimes = {}
         mime_by_ext = {'text': ('.pdf', '.txt', '.doc', '.html', '.xml', '.css'),
                         'archive': ('.zip',),
-                        'image': ('.png', '.jpg', '.jpeg'),
+                        'image': ('.png', '.jpg', '.jpeg', '.gif'),
                         'video': ('.mpg', '.mpeg', '.wmv', '.mp4', '.flv', '.mov')
                         }
 
@@ -594,6 +597,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
 
     @expose('/icons/')
     @expose('/icons/b/<path:path>')
+    @login_required
     def iconic_index(self, path=None):
         """
             Index view method
@@ -613,7 +617,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
         mimes = {}
         mime_by_ext = {'text': ('.pdf', '.txt', '.doc', '.html', '.xml', '.css'),
                         'archive': ('.zip',),
-                        'image': ('.png', '.jpg', '.jpeg'),
+                        'image': ('.png', '.jpg', '.jpeg', '.gif'),
                         'video': ('.mpg', '.mpeg', '.wmv', '.mp4', '.flv', '.mov')
                         }
 
@@ -665,6 +669,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
 
     @expose('/')
     @expose('/b/<path:path>')
+    @login_required
     def index(self, path=None):
         """
             Index view method
@@ -684,7 +689,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
         mimes = {}
         mime_by_ext = {'text': ('.pdf', '.txt', '.doc', '.html', '.xml', '.css'),
                         'archive': ('.zip',),
-                        'image': ('.png', '.jpg', '.jpeg'),
+                        'image': ('.png', '.jpg', '.jpeg', '.gif'),
                         'video': ('.mpg', '.mpeg', '.wmv', '.mp4', '.flv', '.mov')
                         }
 

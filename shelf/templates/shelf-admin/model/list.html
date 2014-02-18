@@ -191,13 +191,13 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if admin_view.can_create %}
-                    <li class="actions">
+                    <li class="actions create">
                         <a href="{{ url_for('.create_view', url=return_url) }}"><i class="fa fa-plus"></i>  {{ _gettext('Create') }}</a>
                     </li>
                     {% endif %}
 
                     {% for p in actions %}
-                    <li class="actions">
+                    <li class="actions delete disabled">
                         <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');"><i class="fa fa-trash-o"></i>  {{ _gettext(p[1]) }}</a>
                     </li>
                     {% endfor %}
@@ -249,13 +249,43 @@
                 }
             });
 
-            $('.model-list tbody input.action-checkbox').change(function (e) {
-                var parent = $(this).closest('tr');
-                parent.toggleClass('selected');
+
+
+            $('.model-list tbody tr').click(function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $(this).find('input.action-checkbox').prop("checked", false);
+                }
+                else
+                {
+                    $(this).addClass('selected');
+                    $(this).find('input.action-checkbox').prop("checked", true);
+                }
+                
+                if ($('.model-list tbody tr.selected').length > 0)
+                    $("li.actions.delete").removeClass('disabled');
+                else
+                    $("li.actions.delete").addClass('disabled');
             });
 
             $('.model-list thead input.action-rowtoggle').change(function (e) {
-                $('.model-list tbody tr').toggleClass('selected');
+                if ($(this).prop("checked") == true)
+                {
+                    $('.model-list tbody tr').addClass('selected');
+                    $('.model-list tbody input.action-checkbox').prop("checked", true);
+                }
+                else 
+                {
+                    $('.model-list tbody tr').removeClass('selected');
+                    $('.model-list tbody input.action-checkbox').prop("checked", false);
+                }
+
+                if ($('.model-list tbody tr.selected').length > 0)
+                    $("li.actions.delete").removeClass('disabled');
+                else
+                    $("li.actions.delete").addClass('disabled');
+                
             });
         })(jQuery);
     </script>

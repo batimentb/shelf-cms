@@ -3,12 +3,48 @@
 from wtforms.fields import TextField, TextAreaField
 from wtforms.widgets import TextInput, TextArea
 from flask.ext.admin.model.form import converts
+from flask_admin.model.widgets import InlineFieldListWidget
 from shelf.model.base import shelf_computed_models, db
+from flask_admin.contrib.sqla.fields import QuerySelectField, QuerySelectMultipleField, InlineModelFormList
 
 import os.path as op
 import os
 
 from flask import render_template
+
+class ShelfInlineFieldListWidget(InlineFieldListWidget):
+    def __init__(self):
+        super(InlineFieldListWidget, self).__init__('shelf-admin/model/inline_field_list.html')
+
+class ShelfInlineModelFormList(InlineModelFormList):
+    widget = ShelfInlineFieldListWidget()
+
+    def populate_obj(self, obj, name):
+        values = getattr(obj, name, None)
+
+        if values is None:
+            return
+
+        # Create primary key map
+        pk_map = dict((str(getattr(v, self._pk)), v) for v in values)
+
+        # Handle request data
+        for field in self.entries:
+            field_id = field.get_pk()
+
+            if field_id in pk_map:
+                model = pk_map[field_id]
+
+                if self.should_delete(field):
+                    self.session.delete(model)
+                    continue
+            else:
+                model = self.model()
+                values.append(model)
+
+            field.populate_obj(model, None)
+
+            self.inline_view.on_model_change(field, model, True)
 
 class RemoteFileWidget(TextInput):
     def __call__(self, *args, **kwargs):

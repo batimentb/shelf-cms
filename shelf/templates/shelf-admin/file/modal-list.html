@@ -29,16 +29,27 @@
                 </tr>
                 {% endfor %}
             </table>
+        </div>
+
+        <div class="modal-footer">
+
                 <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">
-                    {#<ul class="nav nav-pills" style="display: inline-block">
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" style="color: #fff" href="#" data-toggle="dropdown"><i class="fa fa-th fa-lg"></i>  Layout</a>
+                    <ul class="nav nav-pills" style="float: left; display: inline-block">
+                        <li>
+                            {% if dir_path %}
+                            <a href="{{ url_for('.modal_iconic_index', path=dir_path) }}"
+                            class="link">
+                            {% else %}
+                            <a href="{{ url_for('.modal_iconic_index') }}"
+                            class="link">
+                            {% endif %}
+                            <i class="fa fa-th fa-lg"></i> Icons</a>
                         </li>
-                    </ul>#}
+                    </ul>
 
                     {% block model_menu_bar %}
                     <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580" >
-                        <li class="actions validate">
+                        <li class="actions validate disabled">
                             <a href="javascript:void(0)"  style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
                         </li>
                         <li class="actions cancel">
@@ -57,8 +68,26 @@ $('a.link').click(function() {
     return false;
 });
 $('tr.file').click(function() {
-    $('tr.selected').removeClass('selected');
-    $(this).toggleClass('selected');
+
+    if ($(this).hasClass('selected'))
+    {
+        $(this).removeClass('selected');
+    }
+    else
+    {
+        $('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+    }
+
+    if ($('tr.selected').length > 0)
+    {
+        $('li.actions.validate').removeClass('disabled');
+    }
+    else
+    {
+        $('li.actions.validate').addClass('disabled');
+    }
+
     return false;
 });
 

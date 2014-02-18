@@ -1,4 +1,4 @@
-{% extends 'admin/master.html' %}
+{% extends 'shelf-admin/master.html' %}
 {% import 'shelf-admin/lib.html' as lib with context %}
 {% import 'shelf-admin/actions.html' as actionlib with context %}
 
@@ -100,7 +100,11 @@
                     <h1>NEW DIRECTORY</h1>
                 </div>
                 <div class="modal-body" style="padding: 0px; overflow: hidden">
+                    {% if dir_path %}
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir', path=dir_path) }}">
+                    {% else %}
                     <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir') }}">
+                    {% endif %}                    
                         <label for="name" class="control-label">Name</label>
                             <input class="form-control" type="text" id="name" name="name" />
                     </form>
@@ -167,7 +171,7 @@
             </div>
             <div class="collapse navbar-collapse">
                 {% block model_menu_bar %}
-                {#<ul class="nav navbar-nav">
+                <ul class="nav navbar-nav">
                     <li class="dropdown">
                         <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-th fa-lg"></i>  Layout</a>
                         <ul class="dropdown-menu">
@@ -180,7 +184,7 @@
                             {% endif %}
                         </ul>
                     </li>
-                </ul>#}
+                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="actions">
                         <a href="{{ get_dir_url('.upload', path=dir_path) }}"><i class="fa fa-download"></i>  Upload File</a>
@@ -188,7 +192,7 @@
                     <li class="actions new">
                         <a href="javascript:void(0)"><i class="fa fa-folder"></i>  New directory</a>
                     </li>
-                    <li class="actions">
+                    <li class="actions delete disabled">
                         <a href="javascript:void(0)" onclick="return modelActions.execute('{{ actions[0][0] }}');"><i class="fa fa-trash-o"></i>  {{ _gettext(actions[0][1]) }}</a>
                     </li>
                     
@@ -232,17 +236,47 @@
                 }
             });
 
-            $('.model-list tbody input.action-checkbox').change(function (e) {
-                var parent = $(this).closest('tr');
-                parent.toggleClass('selected');
-            });
-
             $('li.actions.new').click(function () {
                 $('#dir-modal').modal('show');
             });
 
+            $('.model-list tbody tr').click(function (e) {
+                if ($(this).find('input.action-checkbox').length == 0)
+                    return;
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $(this).find('input.action-checkbox').prop("checked", false);
+                }
+                else
+                {
+                    $(this).addClass('selected');
+                    $(this).find('input.action-checkbox').prop("checked", true);
+                }
+                
+                if ($('.model-list tbody tr.selected').length > 0)
+                    $("li.actions.delete").removeClass('disabled');
+                else
+                    $("li.actions.delete").addClass('disabled');
+            });
+
             $('.model-list thead input.action-rowtoggle').change(function (e) {
-                $('.model-list tbody tr').toggleClass('selected');
+                if ($(this).prop("checked") == true)
+                {
+                    $('.model-list tbody input.action-checkbox').closest('tr').addClass('selected');
+                    $('.model-list tbody input.action-checkbox').prop("checked", true);
+                }
+                else 
+                {
+                    $('.model-list tbody tr').closest('tr').removeClass('selected');
+                    $('.model-list tbody input.action-checkbox').prop("checked", false);
+                }
+
+                if ($('.model-list tbody tr.selected').length > 0)
+                    $("li.actions.delete").removeClass('disabled');
+                else
+                    $("li.actions.delete").addClass('disabled');
+                
             });
 
             $('.modal li.actions.cancel').click(function() {

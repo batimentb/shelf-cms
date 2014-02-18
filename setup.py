@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ShelfCMS',
-    version='0.3.4',
+    version='0.3.9',
     url='https://github.com/iriahi/shelf-cms',
     license='BSD',
     author='Ismael Riahi',
@@ -15,6 +15,7 @@ setup(
         'Flask>=0.10',
         'Flask-Admin>=1.0.6',
 	'Flask-WTF>=0.9',
-	'Flask-SQLAlchemy>=1.0'
+	'Flask-SQLAlchemy>=1.0',
+        'Flask-Login==0.2.9'
     ]
 )

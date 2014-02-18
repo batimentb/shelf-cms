@@ -183,7 +183,24 @@ body {
 
 .navbar-fixed-bottom ul.nav > li
 {
-  border-right: 1px solid #f8b5b2;
+  border-left: 1px solid #f8b5b2;
+  background-color: #ef8580;
+}
+
+.navbar-fixed-bottom ul.nav > li:hover
+{
+  background-color: #feaaa5 !important;
+}
+
+.navbar-fixed-bottom ul.nav > li.disabled > a,
+ul.nav > li.disabled > a
+{
+  opacity: 0.3;  
+}
+
+.navbar-fixed-bottom ul.nav > li.open
+{
+  background-color: #feaaa5 !important;
 }
 
 .navbar-fixed-bottom ul.nav > li > a
@@ -193,19 +210,8 @@ body {
   font-size: 14px;
 }
 
-.navbar-fixed-bottom ul.nav > li.actions > a
-{
-  background-color: #ef8580;
-}
-
-.navbar-fixed-bottom ul.nav > li > a:hover
-{
-  background-color: #feaaa5 !important;
-}
-
 .navbar-fixed-bottom ul.nav > li.open > a
 {
-  background-color: #feaaa5 !important;
   color: #ffffff !important;
 }
 
@@ -513,46 +519,84 @@ a:hover {
   color: #232323;
 }
 
-.files > div:hover
+/*.files .icon i:hover
 {
-  background: #f4f4f4;
-}
-
-.files > div.selected
-{
-  background: #fde6d5;
-}
-
-.files a:link 
-{ 
-  text-decoration:none; 
-} 
-
-.files .icon i
-{
-  color: #d2d2d2;
+  color: #232323 !important;
 }
 
 .files .selected .icon i
 {
-  color: #f1d4bf;
+  color: #e5c4ac !important;
 }
 
 .files .selected .icon i:hover
 {
-  color: #ca9670;
+  color: #ca9670 !important;
+}*/
+
+.files a > div > i,
+.files .icon i
+{
+  color: #d2d2d2 !important;
 }
 
-.files > div .icon
+.files > div:hover > a,
+.files > a:hover > span,
+.files > div:hover > i,
+.files > a:hover > i,
+.files > div:hover > .caption > a,
+.files .icon:hover i
+{
+  color: #4c4c4c !important;
+}
+
+.files > div.selected > a,
+.files > a.selected > span,
+.files > div.selected > i,
+.files > a.selected > i,
+.files > div.selected > .caption > a,
+.files > .selected .icon i
+{
+  color: #e5c4ac !important;
+}
+
+.files > div.selected:hover > a,
+.files > a.selected:hover > span,
+.files > div.selected:hover > i,
+.files > a.selected:hover > i,
+.files > div.selected:hover > .caption > a,
+.files > .selected .icon:hover i
+{
+  color: #ca9670 !important;
+}
+
+.files .icon
 {
   display: none;
 }
 
-.files > div:hover .icon
+.files:hover .icon
 {
   display: block;
 }
 
+.files > div:hover,
+.files > a:hover
+{
+  background: #f4f4f4;
+}
+
+.files > div.selected:hover,
+.files > a.selected:hover
+{
+  background: #fddabe;
+}
+
+.files > div.selected,
+.files > a.selected
+{
+  background: #fde6d5;
+}
 
 /* Custom page CSS
 -------------------------------------------------- */
@@ -568,6 +612,25 @@ a:hover {
 #footer > .container {
   padding-left: 15px;
   padding-right: 15px;
+}
+
+.modal-body {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
+.modal-footer {
+  padding: 0px !important;
+}
+
+ul.nav-pills > li > a
+{
+  color: #ffffff;
+}
+
+ul.nav-pills > li:hover > a
+{
+  background-color: #feaaa5;
 }
 
 code {
