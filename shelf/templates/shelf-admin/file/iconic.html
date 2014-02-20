@@ -46,7 +46,7 @@
                         {% endif %}
                     {% endif %}
                     {% if admin_view.can_rename and path and name != '..' %}
-                        <button class="icon" data-href="{{ url_for('.rename', path=path) }}"  style="top: 8px; right: 50px; position: absolute; background: none; border: 0px none">
+                        <button class="icon rename" data-href="{{ url_for('.rename', path=path) }}"  style="top: 8px; right: 50px; position: absolute; background: none; border: 0px none">
                             <i class="fa fa-pencil fa-lg"></i>
                         </button>
                     {% endif %}
@@ -54,18 +54,18 @@
                     {% if is_dir %}    
                             <i class="fa {% if name == ".." %}fa-arrow-circle-up{% else %}fa-folder{% endif %} fa-4x"style="padding-top: 30px; color: #d2d2d2"></i>
                             <div class="caption" style="margin: 15px">
-                                <span>{{ name }}</span>
+                                <span class="filename">{{ name }}</span>
                             </div>
                     {% else %}
                         {% if mimes[path] == "image" %}                        
                             <img src="{{ get_file_url(path)|safe }}" style="max-height: 100px; min-height: 100px; padding-top: 10px"/>
                             <div class="caption">
-                                <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
+                                <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span class="filename">{{ name }}</span></a>
                             </div>
                         {% else %}
                             <i class="fa {{ icons_by_mime[mimes[path]] }} fa-4x" style="padding-top: 26px; color: #d2d2d2"></i>
                             <div class="caption" style="margin: 15px">
-                                <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
+                                <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span class="filename">{{ name }}</span></a>
                             </div>
                         {% endif %}  
                     {% endif %}
@@ -226,16 +226,17 @@
                 }           
             });
 
-            $('a.rename').click(function(event)
+            $('button.rename').click(function(event)
             {
                 event.preventDefault();
                 event.stopPropagation();
                 $('#ren-modal').modal('show');
-                $('#ren-modal input#name').val($(this).closest('tr').find('span.filename').html());
+                console.log($(this).closest('.thumbnail').find('span.filename').html());
+                $('#ren-modal input#name').val($(this).closest('.thumbnail').find('span.filename').html());
                 {% if dir_path %}                    
-                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path={{ dir_path }}/" + $(this).closest('tr').find('span.filename').html());
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path={{ dir_path }}/" + $(this).closest('.thumbnail').find('span.filename').html());
                 {% else %}
-                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path=" + $(this).closest('tr').find('span.filename').html());
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path=" + $(this).closest('.thumbnail').find('span.filename').html());
                 {% endif %}
                 
             });
