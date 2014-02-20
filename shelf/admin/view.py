@@ -8,7 +8,7 @@ import os
 import os.path as op
 from operator import itemgetter
 
-from flask import request, url_for
+from flask import request, url_for, json
 from sqlalchemy.types import Text
 
 from sqlalchemy.sql.expression import desc
@@ -433,6 +433,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
             return redirect(self._get_dir_url('.index'))
 
         form = UploadForm(self)
+
         #print form, helpers.validate_form_on_submit(form), form.data
         if helpers.validate_form_on_submit(form):
             filename = op.join(directory,
@@ -445,9 +446,26 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
                 try:
                     self.save_file(filename, form.upload.data)
                     self.on_file_upload(directory, path, filename)
+                    flash('%s was correctly uploaded' % form.upload.data.filename)
                     return redirect(self._get_dir_url('.index', path))
                 except Exception as ex:
                     flash(gettext('Failed to save file: %(error)s', error=ex))
+        elif request.form and 'async' in request.form:
+            total_uploaded = 0
+            for tmp_filename in json.loads(request.form['async']):
+                filename = op.join(directory,
+                               secure_filename(form.upload.data.filename))
+                if op.exists(filename):
+                    total_uploaded = total_uploaded + 1
+
+            if total_uploaded == 0:
+                flash('Nothing was uploaded', 'error')
+            elif total_uploaded == 1:
+                flash('%s was correctly uploaded' % tmp_filename)
+                return redirect(self._get_dir_url('.index', path))
+            else:
+                flash('%d files were correctly uploaded' % total_uploaded)
+                return redirect(self._get_dir_url('.index', path))
 
         return self.render(self.upload_template, form=form, dir_path=path)
 

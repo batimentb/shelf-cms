@@ -12,6 +12,7 @@
         </div>
         <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; overflow: hidden">
                 <form role="form" method="post" enctype="multipart/form-data" id="dropfile"  style="background-color: black;">
+                    <input type="hidden" name="async" id="async" value="">
                     <div class="form-group" style="text-align: center; margin-bottom: 0px; padding: 10px; background: url({{ url_for('shelf.static', filename='shelf-admin/img/motif_up.png') }}); color: #fff">
                         <i class="fa fa-arrow-circle-down fa-2x"></i><br><br>
                         <input type="file" name="upload" id="upload" size="chars" style="margin-left: auto; margin-right: auto"><br>
@@ -272,6 +273,15 @@
             });
 
             $('li.actions.validate').click(function () {
+                var finished = [];
+                for (var i=0; i < documents.length; i++)
+                {
+                    if (documents[i]['size'] == documents[i]['uploaded'])
+                    {
+                        finished.push(documents[i].file);
+                    }
+                }
+                $("input#async").val(JSON.stringify(finished));
                 $('#dropfile').submit();
                 event.preventDefault();
             });
