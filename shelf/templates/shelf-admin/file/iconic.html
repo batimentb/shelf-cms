@@ -27,17 +27,25 @@
                         {% endif %}
                     
                     {%- if admin_view.can_delete and path -%}
-                    {% if is_dir %}
-                        {% if name != '..' and admin_view.can_delete_dirs %}
-                            <form class="icon" method="POST" action="{{ url_for('.delete') }}" style="top: 10px; right: 25px; position: absolute">
-                                <input type="hidden" name="path" value="{{ path }}"></input>
-                                <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
-                                    <i class="fa fa-times-circle fa-lg"></i>
-                                </button>
-                            </form>
+                        {% if is_dir %}
+                            {% if name != '..' and admin_view.can_delete_dirs %}
+                                {% if dir_path %}
+                                <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.iconic_index', path=dir_path) }}" style="top: 10px; right: 25px; position: absolute">
+                                {% else %}
+                                <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.iconic_index') }}" style="top: 10px; right: 25px; position: absolute">
+                                {% endif %}
+                                    <input type="hidden" name="path" value="{{ path }}"></input>
+                                    <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                                        <i class="fa fa-times-circle fa-lg"></i>
+                                    </button>
+                                </form>
                             {% endif %}
                         {% else %}                        
-                            <form class="icon" method="POST" action="{{ url_for('.delete') }}"  style="top: 10px; right: 25px; position: absolute">
+                            {% if dir_path %}
+                            <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.iconic_index', path=dir_path) }}" style="top: 10px; right: 25px; position: absolute">
+                            {% else %}
+                            <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.iconic_index') }}" style="top: 10px; right: 25px; position: absolute">
+                            {% endif %}
                                 <input type="hidden" name="path" value="{{ path }}"></input>
                                 <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
                                     <i class="fa fa-times-circle fa-lg"></i>
@@ -77,8 +85,11 @@
             </div>
             {% endfor %}
     </div>
-
-{{ actionlib.form(actions, url_for('.action_view')) }}
+{% if dir_path %}
+{{ actionlib.form(actions, url_for('.action_view') + "?url=" + url_for('.iconic_index', path=dir_path)) }}
+{% else %}
+{{ actionlib.form(actions, url_for('.action_view') + "?url=" + url_for('.iconic_index')) }}
+{% endif %}
     <div class="modal fade" id="dir-modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -88,9 +99,9 @@
                 </div>
                 <div class="modal-body" style="padding: 0px; overflow: hidden">
                     {% if dir_path %}
-                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir', path=dir_path) }}">
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir', path=dir_path) }}?url={{ url_for('.iconic_index', path=dir_path) }}">
                     {% else %}
-                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir') }}">
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir') }}?url={{ url_for('.iconic_index', path=dir_path) }}">
                     {% endif %}                    
                         <label for="name" class="control-label">Name</label>
                             <input class="form-control" type="text" id="name" name="name" />
@@ -234,9 +245,9 @@
                 console.log($(this).closest('.thumbnail').find('span.filename').html());
                 $('#ren-modal input#name').val($(this).closest('.thumbnail').find('span.filename').html());
                 {% if dir_path %}                    
-                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path={{ dir_path }}/" + $(this).closest('.thumbnail').find('span.filename').html());
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?url={{ url_for('.iconic_index', path=dir_path) }}&path={{ dir_path }}/" + $(this).closest('.thumbnail').find('span.filename').html());
                 {% else %}
-                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?path=" + $(this).closest('.thumbnail').find('span.filename').html());
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?url={{ url_for('.iconic_index') }}&path=" + $(this).closest('.thumbnail').find('span.filename').html());
                 {% endif %}
                 
             });

@@ -36,6 +36,8 @@ from werkzeug import secure_filename
 
 from flask_login import login_required
 
+import shutil
+
 class ShelfModelView(sqla.ModelView):
     list_template = "shelf-admin/model/list.html"
     create_template = "shelf-admin/model/create.html"
@@ -356,13 +358,19 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
             f.write(decoded)
         return "True"
 
+
     @action('delete',
             lazy_gettext('Delete'),
             lazy_gettext('Are you sure you want to delete these files?'))
     def action_delete(self, items):
+        return_url = request.args.get('urls')
+
         if not self.can_delete:
             flash(gettext('File deletion is disabled.'), 'error')
-            return
+            if return_url:
+                return redirect(return_url) 
+            else:
+                return
 
         for path in items:
             base_path, full_path, path = self._normalize_path(path)
@@ -373,6 +381,56 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
                     flash(gettext('File "%(name)s" was successfully deleted.', name=path))
                 except Exception as ex:
                     flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
+                if return_url:
+                    return redirect(return_url) 
+                else:
+                    return
+
+
+    @expose('/delete/', methods=('POST',))
+    @login_required
+    def delete(self):
+        """
+            Delete view method
+        """
+        path = request.form.get('path')
+
+        if not path:
+            return redirect(url_for('.index'))
+
+        # Get path and verify if it is valid
+        base_path, full_path, path = self._normalize_path(path)
+
+        return_url = request.args.get('url') or self._get_dir_url('.index', op.dirname(path))
+
+        if not self.can_delete:
+            flash(gettext('Deletion is disabled.'))
+            return redirect(return_url)
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
+        if op.isdir(full_path):
+            if not self.can_delete_dirs:
+                flash(gettext('Directory deletion is disabled.'))
+                return redirect(return_url)
+
+            try:
+                shutil.rmtree(full_path)
+                self.on_directory_delete(full_path, path)
+                flash(gettext('Directory "%s" was successfully deleted.' % path))
+            except Exception as ex:
+                flash(gettext('Failed to delete directory: %(error)s', error=ex), 'error')
+        else:
+            try:
+                os.remove(full_path)
+                self.on_file_delete(full_path, path)
+                flash(gettext('File "%(name)s" was successfully deleted.', name=path))
+            except Exception as ex:
+                flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
+
+        return redirect(return_url)
 
     @expose('/mkdir/', methods=('GET', 'POST'))
     @expose('/mkdir/<path:path>', methods=('GET', 'POST'))
@@ -387,7 +445,7 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
-        dir_url = self._get_dir_url('.index', path)
+        dir_url = request.args.get('url') or self._get_dir_url('.index', path)
 
         if not self.can_mkdir:
             flash(gettext('Directory creation is disabled.'), 'error')
@@ -398,7 +456,6 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
             return redirect(self._get_dir_url('.index'))
 
         form = NameForm(helpers.get_form_data())
-        print form, helpers.validate_form_on_submit(form), form.data
 
         if helpers.validate_form_on_submit(form):
             try:
@@ -410,6 +467,57 @@ class ShelfFileAdmin(fileadmin.FileAdmin):
                 flash(gettext('Failed to create directory: %(error)s', ex), 'error')
 
         return redirect(dir_url)
+
+
+    @expose('/rename/', methods=('GET', 'POST'))
+    @login_required
+    def rename(self):
+        """
+            Rename view method
+        """
+        path = request.args.get('path')
+
+        if not path:
+            return redirect(url_for('.index'))
+
+        base_path, full_path, path = self._normalize_path(path)
+
+        return_url = request.args.get('url') or self._get_dir_url('.index', op.dirname(path))
+        
+        if not self.can_rename:
+            flash(gettext('Renaming is disabled.'))
+            return redirect(return_url)
+
+        if not self.is_accessible_path(path):
+            flash(gettext(gettext('Permission denied.')))
+            return redirect(self._get_dir_url('.index'))
+
+        if not op.exists(full_path):
+            flash(gettext('Path does not exist.'))
+            return redirect(return_url)
+
+        form = NameForm(helpers.get_form_data(), name=op.basename(path))
+        if helpers.validate_form_on_submit(form):
+            try:
+                dir_base = op.dirname(full_path)
+                filename = secure_filename(form.name.data)
+
+                os.rename(full_path, op.join(dir_base, filename))
+                self.on_rename(full_path, dir_base, filename)
+                flash(gettext('Successfully renamed "%(src)s" to "%(dst)s"',
+                      src=op.basename(path),
+                      dst=filename))
+            except Exception as ex:
+                flash(gettext('Failed to rename: %(error)s', error=ex), 'error')
+
+            return redirect(return_url)
+
+        return self.render(self.rename_template,
+                           form=form,
+                           path=op.dirname(path),
+                           name=op.basename(path),
+                           dir_url=return_url)
+
 
     @expose('/upload/', methods=('GET', 'POST'))
     @expose('/upload/<path:path>', methods=('GET', 'POST'))
