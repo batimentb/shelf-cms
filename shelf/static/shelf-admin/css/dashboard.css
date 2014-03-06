@@ -1,0 +1,25 @@
+.widget {
+	padding: 18px;
+	font-family: 'Open Sans', sans-serif;
+	color: #4c4c4c;
+}
+
+.widget .title {
+	font-size: 12px;
+}
+
+.widget.text .data {
+	font-size: 30px;
+}
+
+.widget.text .legend {
+	font-size: 12px;
+}
+
+.widget.text .legend .value {
+	color: #77af96;
+}
+
+.widget.text .legend .value-bad {
+	color: #ff4262;
+}

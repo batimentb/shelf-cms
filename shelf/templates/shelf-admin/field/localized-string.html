@@ -11,14 +11,18 @@
 				<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ id }}-accordion" href="#{{ id }}-panel">
 		        Translate
 		      </a>
-		</div>
+		</div>		
 		<div id="{{ id }}-panel" class="accordion-body collapse" style="border: 0px">
 	    	<div class="accordion-inner" style="border: 0px">
-	    		<div class="input-group">
-					<span class="input-group-addon">FR</span>
-					<input class="fr form-control" name="{{ id }}-fr" id="{{ id }}-fr" type="text" 
-					value="{% if data['fr'] %}{{ data['fr'] }}{% endif %}" />
-				</div>
+	    		{% for lang in langs %}
+	    		{% if lang.lower() != "en" %}
+		    		<div class="input-group">
+						<span class="input-group-addon">{{ lang.upper() }}</span>
+						<input class="fr form-control" name="{{ id }}-{{ lang.lower() }}" id="{{ id }}-{{ lang.lower() }}" type="text" 
+						value="{% if data[lang] %}{{ data[lang] }}{% endif %}" />
+					</div>
+				{% endif %}
+				{% endfor %}
 	      	</div>
     	</div>
 	</div>

@@ -289,6 +289,8 @@ class ShelfPageView(ShelfModelView):
 
     pages_form = {}
 
+    column_list = ("name",)
+
     def register_form(self, cls, form):
         self.pages_form[cls] = form
     

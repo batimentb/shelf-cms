@@ -158,13 +158,13 @@ class WysiwygTextField(TextAreaField):
 
 class LocalizedTextWidget(TextInput):
     def __call__(self, *args, **kwargs):
-        return render_template("shelf-admin/field/localized-string.html", id=args[0].id, data=args[0].data)
+        return render_template("shelf-admin/field/localized-string.html", id=args[0].id, data=args[0].data, langs=LocalizedTextField.langs)
 
 _unset_value = object()
 
 class LocalizedTextField(TextField):
     widget = LocalizedTextWidget()
-    langs = ("en", "fr")
+    langs = ("en", "fr", "es")
 
     def process(self, formdata, data=_unset_value):
         """
@@ -249,7 +249,7 @@ class LocalizedTextField(TextField):
 
 class LocalizedWysiwygTextWidget(TextArea):
     def __call__(self, *args, **kwargs):
-        return render_template("shelf-admin/field/localized-wysiwyg-text.html", id=args[0].id, data=args[0].data)
+        return render_template("shelf-admin/field/localized-wysiwyg-text.html", id=args[0].id, data=args[0].data, langs=LocalizedTextField.langs)
 
 class LocalizedWysiwygTextField(LocalizedTextField):
     widget = LocalizedWysiwygTextWidget()

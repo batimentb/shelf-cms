@@ -121,6 +121,10 @@ class Marker:
 class Page(db.Model):
 	id = db.Column(db.Integer, primary_key = True)
 	name = db.Column(db.String(50))
+	title_id = db.Column(db.Integer, db.ForeignKey('localized_string.id'))
+	title = db.relationship('LocalizedString', foreign_keys=(title_id,))
+	description_id = db.Column(db.Integer, db.ForeignKey('localized_string.id'))
+	description = db.relationship('LocalizedString', foreign_keys=(description_id,))
 
 	__mapper_args__ = {
 		'polymorphic_on': name,

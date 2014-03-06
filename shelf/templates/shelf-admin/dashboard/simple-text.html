@@ -1,0 +1,8 @@
+<div class="widget text" style="width: 244px; height: 116px; margin-bottom: 12px; background: white">
+	<i class="fa fa-{{ icon }} pull-right"></i>
+	<div class="title">{{ title }}</div>
+	<div class="data">{{ data }}</div>
+	{% if legend %}
+	<div class="legend">{{ legend|safe }}</div>
+	{% endif %}
+</div>

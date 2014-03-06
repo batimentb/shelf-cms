@@ -9,15 +9,19 @@
 				<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ id }}-accordion" href="#{{ id }}-panel">
 		        Translations
 		      </a>
-		</div>
+		</div>		
 		<div id="{{ id }}-panel" class="accordion-body collapse" style="border: 0px">
 	    	<div class="accordion-inner" style="border: 0px">
-					<h3 class="add-on">French</h3>
-					<textarea class="fr wysiwyg" name="{{ id }}-fr" id="{{ id }}-fr"/>
-					{% if data['fr'] %}{{ data['fr'] }}{% endif %}
-					</textarea>
+	    			{% for lang in langs %}
+	    			{% if lang.lower() != "en" %}
+						<h3 class="add-on">{{ lang.upper() }}</h3>
+						<textarea class="fr wysiwyg" name="{{ id }}-{{ lang.lower() }}" id="{{ id }}-{{ lang.lower() }}"/>
+						{% if data[lang] %}{{ data[lang] }}{% endif %}
+						</textarea>
+					{% endif %}
+					{% endfor %}
 	      	</div>
-    	</div>
+    	</div>    	
 	</div>
 </div>
 </div>
