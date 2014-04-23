@@ -36,3 +36,14 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Virtualenv
+env
+
+# Vim temporary files
+*~
+*.swp
+*.swo
+
+# Emacs temporary files
+[#]*[#]
