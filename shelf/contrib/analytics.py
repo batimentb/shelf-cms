@@ -35,6 +35,11 @@ class Analytics():
 		self.profile = None
 		self.analytics = None
 
+		self.TOKEN_FILE_NAME = self.DEFAULT_TOKEN_FILE_NAME
+		self.CLIENT_SECRETS = self.DEFAULT_CLIENT_SECRETS
+		self.MISSING_CLIENT_SECRETS_MESSAGE = self.DEFAULT_MISSING_CLIENT_SECRETS_MESSAGE
+
+
 	def prepare(self):
 		self.http = httplib2.Http()
 
@@ -95,25 +100,28 @@ class Analytics():
 		
 
 	def set_profile(self):
-		# Get a list of all Google Analytics accounts for this user
-		accounts = self.analytics.management().accounts().list().execute()
+		try:
+			# Get a list of all Google Analytics accounts for this user
+			accounts = self.analytics.management().accounts().list().execute()
 
-		if accounts.get('items'):
-			# Get the first Google Analytics account
-			self.account = accounts.get('items')[0].get('id')
+			if accounts.get('items'):
+				# Get the first Google Analytics account
+				self.account = accounts.get('items')[0].get('id')
 
-			# Get a list of all the Web Properties for the first account
-			webproperties = self.analytics.management().webproperties().list(accountId=self.account).execute()
+				# Get a list of all the Web Properties for the first account
+				webproperties = self.analytics.management().webproperties().list(accountId=self.account).execute()
 
-			if webproperties.get('items'):
-				# Get the first Web Property ID
-				self.web_property = webproperties.get('items')[0].get('id')
+				if webproperties.get('items'):
+					# Get the first Web Property ID
+					self.web_property = webproperties.get('items')[0].get('id')
 
-				# Get a list of all Profiles for the first Web Property of the first Account
-				profiles = self.analytics.management().profiles().list(
-						accountId=self.account,
-						webPropertyId=self.web_property).execute()
+					# Get a list of all Profiles for the first Web Property of the first Account
+					profiles = self.analytics.management().profiles().list(
+							accountId=self.account,
+							webPropertyId=self.web_property).execute()
 
-				if profiles.get('items'):
-					self.profile = profiles.get('items')[0].get('id')
+					if profiles.get('items'):
+						self.profile = profiles.get('items')[0].get('id')
+		except:
+			pass
 

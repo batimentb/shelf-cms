@@ -1,0 +1,92 @@
+{% extends 'shelf/base/base.html' %}
+{% import 'shelf/base/lib.html' as lib with context %}
+
+{% macro extra() %}
+  <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
+{% endmacro %}
+
+{% block iscontent %}active{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+    <link href="{{ url_for('shelf.static', filename='shelf/css/bootstrap3-wysihtml5.min.css') }}"  rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+    <div class="row" style="margin-top: 50px; background-color: #ffffff">
+        <div class="col-xs-12" style="border-bottom: 1px solid #ddd; padding-top: 5px; padding-bottom: 15px; padding-left: 25px">
+            <h1>{{ admin_view.name.upper() }}</h1>
+        </div>
+        <div class="col-xs-12"  style="padding-top: 25px; padding-bottom: 15px">
+          {% call lib.form_tag(form) %}
+              {{ lib.render_form_fields(form) }}
+              {#{ lib.render_form_buttons(return_url, extra()) }#}
+          {% endcall %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom %}
+    <div class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                {% block model_menu_bar %}
+                <ul class="nav navbar-nav">
+                  
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  <li class="actions"><a role="submit" class="save-model" href="#"><i class="fa fa-check"></i> {{ _gettext('Save') }}</a></li>
+                  <li class="actions"><a href="#" class="add-new"><i class="fa fa-refresh"></i> {{ _gettext('Save and Add') }}</a></li>
+                  <li class="actions"><a href="{{ return_url }}"><i class="fa fa-times"></i> {{ _gettext('Cancel') }}</a></li>
+                </ul>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+  <script src="{{ url_for('shelf.static', filename='shelf/js/wysihtml5-0.3.0.min.js') }}"></script>
+  <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
+  <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.min.js') }}"></script>
+  <script src="{{ url_for('shelf.static', filename='shelf/js/form.js') }}"></script>
+  <script language="javascript">
+        (function($) {
+            $('a.save-model').click(function (e) {
+                $("form.model-form").submit();
+                e.stopPropagation();
+            });
+
+            $('a.add-new').click(function (e) {
+                $('input[name=_continue_editing]').val('1');
+                $("form.model-form").submit();
+                e.stopPropagation();
+            });
+
+            $('button.modal-open').on('click', function() {
+              $(this).closest('.widget').find('.modal').modal({
+                remote: "/admin/library/modal/",
+                toggle: "modal"
+              });
+              return false;
+            });
+            
+            $('.wysiwyg').wysihtml5({
+                html: true,
+            });     
+        })(jQuery);
+    </script>
+{% endblock %}

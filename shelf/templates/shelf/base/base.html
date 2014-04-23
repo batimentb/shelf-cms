@@ -1,0 +1,98 @@
+{% import 'shelf/base/layout.html' as layout with context -%}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% if admin_view.category %}{{ admin_view.category }} - {% endif %}{{ admin_view.name }} - {{ admin_view.admin.name }}{% endblock %}</title>
+   {% block head_meta %}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="">
+      <meta name="author" content="">
+  {% endblock %}
+  {% block head_css %}
+      <link href="{{ url_for('shelf.static', filename='shelf/css/bootstrap.min.css') }}" rel="stylesheet" media="screen">
+      <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+      <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+      <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+      <![endif]-->
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
+      <link href="{{ url_for('shelf.static', filename='shelf/css/shelf.css') }}" rel="stylesheet">
+  {% endblock %}
+  {% block head %}
+  {% endblock %}
+  {% block head_tail %}
+  {% endblock %}     
+  </head>
+
+  <body>
+    <div id="wrap">
+      {% block page_body %}
+      <!-- Fixed navbar -->
+      <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">
+              {% block brand %}
+              <img style="height: 38px" src="{{ url_for('shelf.static', filename='shelf/img/shelf_logo.png') }}" />
+              {% endblock %}
+            </a>
+          </div>
+          <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              {% set home = admin_view.admin.menu()[0] %}
+              <li class="{% if home.is_active(admin_view) %}active{% endif %}"><a href="{{ home.url }}">{{ home.name }}</a></li>
+              <li class="dropdown {% block iscontent %}{% endblock %}">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Content <b class="caret"></b></a>
+                {{ layout.content() }}
+              </li>
+              {% set library = admin_view.admin.menu()[2] %}
+              <li class="{% if library.is_active(admin_view) %}active{% endif %}"><a href="{{ library.url }}">{{ library.name }}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              {#{ layout.menu_links() }#}
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i></a>
+                <ul class="dropdown-menu pull-right">
+                  <li class="dropdown-header">Hi <span>{{user.firstname if user.firstname else user.email}}</span></li>
+                  <li><a href="{{ url_for('userview.edit_view', id=user.id) }}">My profile</a></li>
+                  {% if user.profile == "Admin" %}
+                  <li><a href="{{ url_for('userview.index_view') }}">Users</a></li>
+                  {% endif %}
+                  <li><a href="{{ url_for('admin.logout') }}">Log out</a></li>
+                </ul>
+              </li>
+              {#<li><a href="#">Paramètres</a></li>#}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      {% endblock %}
+      </div> {# /wrap #}
+
+      <!-- Begin page content -->
+      <div class="container">
+        {% block body %}{% endblock %}
+      </div>
+
+      {{ layout.messages() }}
+      {% block bottom %}
+      {% endblock %}
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+   
+    <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap.min.js') }}"></script>
+    
+    {% block tail %}
+    {% endblock %}
+  </body>
+</html>

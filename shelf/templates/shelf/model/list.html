@@ -1,0 +1,323 @@
+{% extends 'shelf/base/base.html' %}
+{% import 'shelf/base/lib.html' as lib with context %}
+{% import 'shelf/model/layout.html' as model_layout with context %}
+{% import 'shelf/base/actions.html' as actionlib with context %}
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+    <style type="text/css" media="screen">
+        body.dragging, body.dragging * {
+            cursor: move !important;
+        }
+
+        .dragged {
+            position: absolute;
+            opacity: 0.5;
+            z-index: 2000;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block iscontent %}active{% endblock %}
+
+{% block body %}
+    <div class="row" style="margin-top: 50px; background-color: #ffffff">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; padding-top: 5px; padding-left: 25px;">
+            <h1>{{ admin_view.name.upper() }}</h1>
+        </div>
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; overflow: hidden">
+        {% block model_list_table %}
+        <table class="table model-list" style="border-top: 1px solid #ddd">
+            <thead>
+                <tr>
+                    {% block list_header scoped %}
+                        {% if actions %}
+                        <th class="span1 center">
+                            <input type="checkbox" name="rowtoggle" class="action-rowtoggle" />
+                        </th>
+                        {% endif %}
+                        
+                        {% set column = 0 %}
+                        {% for c, name in list_columns %}
+                        <th>
+                            {% if admin_view.is_sortable(c) %}
+                                {% if sort_column == column %}
+                                    <a href="{{ sort_url(column, True) }}">
+                                        {{ name }}
+                                    </a>
+                                    {% if sort_desc %}
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-up fa-lg"></i></span>
+                                    {% else %}
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-down fa-lg"></i></span>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ sort_url(column) }}">{{ name }}</a>
+                                {% endif %}
+                            {% else %}
+                                {{ name }}
+                            {% endif %}
+                            {% if admin_view.column_descriptions.get(c) %}
+                                <a class="icon-question-sign"
+                                   title="{{ admin_view.column_descriptions[c] }}"
+                                   href="javascript:void(0)" data-role="tooltip"
+                                ></a>
+                            {% endif %}
+                        </th>
+                        {% set column = column + 1 %}
+                        {% endfor %}
+                        {% block list_row_actions_header %}
+                        <th>&nbsp;</th>
+                        {% endblock %}
+                    {% endblock %}
+                </tr>
+            </thead>
+            {% for row in data %}
+            <tr>
+                {% block list_row scoped %}
+                    {% if actions %}
+                    <td class="center">
+                        <input type="checkbox" name="rowid" class="action-checkbox" value="{{ get_pk_value(row) }}" />
+                    </td>
+                    {% endif %}                    
+                    {% for c, name in list_columns %}
+                    <td>{{ get_value(row, c) }}</td>
+                    {% endfor %}
+                    <td class="center">
+                        {% block list_row_actions scoped %}
+                        {%- if admin_view.can_edit -%}
+                        <a class="icon" href="{{ url_for('.edit_view', id=get_pk_value(row), url=return_url) }}" style="padding-right: 6px">
+                            <i class="fa fa-pencil fa-lg"></i>
+                        </a>
+                        {%- endif -%}
+                        {%- if admin_view.can_delete -%}
+                        <form class="icon form-inline" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
+                            <button type="submit" onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
+                                <i class="fa fa-times-circle fa-lg"></i>
+                            </button>
+                        </form>
+                        {%- endif -%}
+                    {% endblock %}
+                    </td>
+                {% endblock %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% endblock %}
+        </div>
+    </div>
+
+    {{ actionlib.form(actions, url_for('.action_view')) }}
+{% endblock %}
+
+{% block bottom %}
+    <div class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">{{ admin_view.name }} ({{ count }})</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                {% block model_menu_bar %}
+                <ul class="nav navbar-nav">
+                    {% if num_pages > 1 %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-ellipsis-h"></i> Pagination <b class="caret"></b></a>
+                        <div class="dropdown-menu navbar-form form-inline pagination-menu" style="padding: 15px; min-width: 0px">
+                            {{lib.pager(page, num_pages, pager_url)}}
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if filter_groups %}
+                    <li class="dropdown filter-menu">
+                        {{ model_layout.filter_form() }}
+                    </li>
+                    {% endif %}
+
+                    {% if search_supported %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-search"></i> {{ _gettext('Search') }} <b class="caret"></b></a>
+                        {#{{ model_layout.search_form() }#}
+                        <div class="dropdown-menu" style="padding: 15px; min-width: 0px;">
+                            <form method="GET" action="{{ return_url }}" class="search-form">
+                                    {% if sort_column is not none %}
+                                    <input type="hidden" name="sort" value="{{ sort_column }}"></input>
+                                    {% endif %}
+                                    {% if sort_desc %}
+                                    <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
+                                    {% endif %}
+                                    <div class="input-group" style="width: 400px">
+                                        {% if search %}
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default" href="{{ clear_search_url }}" type="button"><icon class="fa fa-times-circle fa-lg"></icon></a>
+                                        </span>
+                                        <input type="text" name="search" value="{{ search }}" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+                                        {% else %}
+                                        <input type="text" name="search" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}">
+                                        {% endif %}
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="submit">Search</button>
+                                        </span>
+                                    </div>
+                            </form>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-sort-alpha-asc"></i> {{ _gettext('Sort') }} <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            {% set column = 0 %}
+                            {% for c, name in list_columns %}
+                                {% if admin_view.is_sortable(c) %}
+                                    <li>
+                                    {% if sort_column == column %}
+                                        <a href="{{ sort_url(column, True) }}">
+                                            {{ name }}
+                                            <span class="pull-right">
+                                            {% if sort_desc %}
+                                                <icon class="fa fa-arrow-circle-up fa-lg"></icon>
+                                            {% else %}
+                                                <icon class="fa fa-arrow-circle-down fa-lg"></icon>
+                                            {% endif %}
+                                            </span>
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ sort_url(column) }}">{{ name }}</a>
+                                    {% endif %}
+                                    </li>
+                                {% endif %}
+                                {% set column = column + 1 %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                    {#{% if filter_groups %}
+                        {{ model_layout.filter_form() }}
+                    {% endif %}#}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if admin_view.can_create %}
+                    <li class="actions create">
+                        <a href="{{ url_for('.create_view', url=return_url) }}"><i class="fa fa-plus"></i>  {{ _gettext('Create') }}</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">Actions  <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            {% for p in actions %}
+                            <li class="actions delete disabled">
+                                <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');">{% if p[2] %}<i class="fa fa-{{p[2]}}"></i>  {% endif %}{{ _gettext(p[1]) }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                    
+                </ul>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='shelf/js/form.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='shelf/js/jquery-sortable.js') }}"></script>
+
+    {{ actionlib.script(_gettext('Please select at least one model.'),
+                      actions,
+                      actions_confirmation) }}
+
+    <script language="javascript">
+        (function($) {
+            $('[data-role=tooltip]').tooltip({
+                html: true,
+                placement: 'bottom'
+            });
+            {% if filter_groups is not none and filter_data is not none %}
+                var filter = new AdminFilters(
+                    '#filter_form', '.field-filters',
+                    {{ admin_view._filter_dict|tojson|safe }},
+                    {{ filter_data|tojson|safe }},
+                    {{ filter_types|tojson|safe }}
+                );
+            {% endif %}
+
+
+
+            $('.navbar-fixed-bottom .dropdown-menu').click(function (e) {
+                e.stopPropagation();
+            });
+
+            $('.navbar-fixed-bottom .filter-menu > .dropdown-menu a').click(function (e) {
+                var target = $(e.currentTarget).parent();
+                if (target.hasClass('active'))
+                {
+                    target.removeClass('active');
+                }
+                else
+                {
+                    target.addClass('active');
+                }
+            });
+
+            {% if has_order %}
+            $('.model-list tbody').sortable({
+              containerSelector: 'tbody',
+              itemSelector: 'tr',
+              placeholder: '<tr class="placeholder" style="height: 30px; border: 1px;"/>'
+            });
+            {% endif %}
+
+            $('.model-list tbody tr').click(function (e) {
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $(this).find('input.action-checkbox').prop("checked", false);
+                }
+                else
+                {
+                    $(this).addClass('selected');
+                    $(this).find('input.action-checkbox').prop("checked", true);
+                }
+                
+                if ($('.model-list tbody tr.selected').length > 0)
+                    $("li.actions.delete").removeClass('disabled');
+                else
+                    $("li.actions.delete").addClass('disabled');
+            });
+
+            $('.model-list thead input.action-rowtoggle').change(function (e) {
+                if ($(this).prop("checked") == true)
+                {
+                    $('.model-list tbody tr').addClass('selected');
+                    $('.model-list tbody input.action-checkbox').prop("checked", true);
+                }
+                else 
+                {
+                    $('.model-list tbody tr').removeClass('selected');
+                    $('.model-list tbody input.action-checkbox').prop("checked", false);
+                }
+
+                if ($('.model-list tbody tr.selected').length > 0)
+                    $("li.actions.delete").removeClass('disabled');
+                else
+                    $("li.actions.delete").addClass('disabled');
+                
+            });
+        })(jQuery);
+    </script>
+{% endblock %}

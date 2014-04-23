@@ -1,0 +1,90 @@
+{% macro content() %}
+
+  <ul class="dropdown-menu">
+     {% for item in admin_view.admin.content() %}
+        {% if item.is_category() %}
+          {% set children = item.get_children() %}
+          {% if children %}
+            {% if item.is_active(admin_view) %}<li class="dropdown-header active">{% else %}<li class="dropdown-header">{% endif %}{{ item.name }}</li>
+            {% for child in children %}
+              {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
+              <a href="{{ child.get_url() }}">{{ child.name }}</a></li>
+            {% endfor %}
+            <li class="divider"></li>
+          {% endif %}
+        {% else %}
+          {% if item.is_accessible() and item.is_visible() %}
+            {% if item.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
+            <a href="{{ item.get_url() }}">{{ item.name }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+     {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro menu() %}
+  {% for item in admin_view.admin.menu() %}
+    {% if item.is_category() %}
+      {% set children = item.get_children() %}
+      {% if children %}
+        {% if item.is_active(admin_view) %}<li class="active dropdown">{% else %}<li class="dropdown">{% endif %}
+          <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">{{ item.name }}<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            {% for child in children %}
+              {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
+                <a href="{{ child.get_url() }}">{{ child.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
+    {% else %}
+      {% if item.is_accessible() and item.is_visible() %}
+        {% if item.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
+          <a href="{{ item.get_url() }}">{{ item.name }}</a>
+        </li>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% macro menu_links() %}
+  {% for item in admin_view.admin.menu_links() %}
+    {% if item.is_accessible() and item.is_visible() %}
+      <li>
+        <a href="{{ item.get_url() }}">{{ item.name }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+<div class="alert alert-success">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-info">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-warning">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-danger">
+  <a href="#" class="alert-link">...</a>
+</div>
+
+{% macro messages() %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, m in messages %}
+        {% if category == 'error' %}
+        <div class="alert alert-danger" style="position: fixed; right: 0px; left: 0px; bottom: 30px">
+        {% else %}
+        <div class="alert alert-success" style="position: fixed; right: 0px; left: 0px; bottom: 30px">
+        {% endif %}
+          <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endmacro %}
