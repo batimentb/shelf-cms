@@ -278,3 +278,22 @@ class LocalizedWysiwygTextField(LocalizedTextField):
                 lstring.trad.append(getattr(obj.__class__, name).mapper.class_(lang=lang, value=self.data[lang]))
             else:
                 res.value = self.data[lang]
+
+class LocalizedRemoteFileWidget(TextArea):
+    def __call__(self, *args, **kwargs):
+        return render_template("shelf/field/localized-remote-file.html", id=args[0].id, data=args[0].data, langs=LocalizedTextField.langs)
+
+class LocalizedRemoteFileField(LocalizedTextField):
+    widget = LocalizedRemoteFileWidget()
+
+    def process_formdata(self, valuelist):
+        self.data = {}
+        for i in range(len(valuelist)):
+            self.data[self.langs[i]] = valuelist[i]
+
+    def process_data(self, value):
+        self.data = {}
+        if value:
+            self.data[value.lang] = value.value
+            for translation in value.trad:
+                self.data[translation.lang] = translation.value

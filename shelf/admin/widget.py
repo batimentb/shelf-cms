@@ -58,8 +58,6 @@ class EvolutionDashboardWidget(DashboardWidget):
             if month > 12:
                 month = month % 12
             months.append(month)
-        print months
-        print res
 
         self.legend = ([monthnames[month] for month in months])
         self.data = [float(res['%02d' % month][self.metric]) for month in months]

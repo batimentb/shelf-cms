@@ -100,7 +100,7 @@
                     });
                 }
 
-                $el.select2(opts);
+                //$el.select2(opts);
                 return true;
             case 'select2-ajax':
                 processAjaxWidget($el, name);

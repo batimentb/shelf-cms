@@ -652,7 +652,7 @@ class ShelfModelView(sqla.ModelView):
                     setattr(cls, k, PictureField())
 
         if issubclass(self.model, WorkflowMixin):
-            cls.shelf_state = wtforms.HiddenField()
+            cls.shelf_state = wtforms.HiddenField(default="draft")
         if issubclass(self.model, OrderableMixin):
             cls.shelf_order = wtforms.HiddenField()
 

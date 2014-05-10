@@ -666,3 +666,7 @@ ul.nav > li.actions.draft > a {
   border-bottom: 5px solid #d6d1c0 !important;
   padding-bottom: 10px !important;
 }
+
+.navbar-right .dropdown-menu .actions a {
+  float:  right;
+}

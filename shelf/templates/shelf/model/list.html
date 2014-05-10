@@ -111,6 +111,51 @@
     </div>
 
     {{ actionlib.form(actions, url_for('.action_view')) }}
+
+    {% if filter_groups %}
+    <div class="modal fade" id="filter-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+                    <h1>FILTER</h1>
+                </div>
+                <div class="modal-body" style="padding: 0px; overflow: hidden">
+                    <div style="min-height: 300px">
+                     {{ model_layout.filter_form() }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">
+                        <ul class="nav nav-pills" style="display: inline-block; float:left; background-color: #ef8580">
+                            <li class="dropup">
+                                <a class="{{ btn_class }} dropdown-toggle" data-toggle="dropdown" style="color: #fff" href="javascript:void(0)">
+                                    {{ _gettext('Add Filter') }}<b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu field-filters">
+                                    {% for k in filter_groups %}
+                                    <li>
+                                        <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k[0] }}</a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            
+                        </ul>                
+                        <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580">
+                            <li class="actions clean">
+                                <a href="{{ clear_search_url }}" style="color: #fff">Clean filters</a>
+                            </li>
+                            <li class="actions apply">
+                                <a href="javascript:void(0)" style="color: #fff">Apply</a>
+                            </li>
+                        </ul>                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block bottom %}
@@ -137,8 +182,8 @@
                     {% endif %}
 
                     {% if filter_groups %}
-                    <li class="dropdown filter-menu">
-                        {{ model_layout.filter_form() }}
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#filter-modal"><i class="fa fa-filter"></i> Filter</a>
                     </li>
                     {% endif %}
 
@@ -199,10 +244,6 @@
                             {% endfor %}
                         </ul>
                     </li>
-
-                    {#{% if filter_groups %}
-                        {{ model_layout.filter_form() }}
-                    {% endif %}#}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if admin_view.can_create %}
@@ -216,7 +257,7 @@
                         <ul class="dropdown-menu">
                             {% for p in actions %}
                             <li class="actions delete disabled">
-                                <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');">{% if p[2] %}<i class="fa fa-{{p[2]}}"></i>  {% endif %}{{ _gettext(p[1]) }}</a>
+                                <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');">{% if p[2] %}{% endif %}{{ _gettext(p[1]) }}    <i class="fa fa-{{p[2]}}"></i></a>
                             </li>
                             {% endfor %}
                         </ul>
@@ -234,7 +275,7 @@
     {{ super() }}
     <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
     <script src="{{ url_for('shelf.static', filename='shelf/js/form.js') }}"></script>
-    <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='shelf/js/filter.js') }}"></script>
     <script src="{{ url_for('shelf.static', filename='shelf/js/jquery-sortable.js') }}"></script>
 
     {{ actionlib.script(_gettext('Please select at least one model.'),
@@ -256,7 +297,9 @@
                 );
             {% endif %}
 
-
+            $(".actions.apply").click(function(e) {
+                $("#filter_form").submit();
+            });
 
             $('.navbar-fixed-bottom .dropdown-menu').click(function (e) {
                 e.stopPropagation();

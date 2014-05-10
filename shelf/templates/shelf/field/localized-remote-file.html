@@ -1,0 +1,45 @@
+<div class="remote-file widget">
+	<div class="input-group">
+		<span class="input-group-addon">EN</span>
+		<input class="en form-control" name="{{ id }}-en" id="{{ id }}-en" type="text" 
+		value="{% if data['en'] %}{{ data['en'] }}{% endif %}" />
+		<span class="input-group-btn">
+	    	<button class="btn btn-default modal-open" type="button">Select file</button>
+	  	</span>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade">
+	</div>
+	<br>
+</div>
+
+<div class="accordion" id="{{ id }}-accordion" style="border: 0px">
+	<div class="accordion-group">
+		<div class="accordion-heading" style="border: 0px">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ id }}-accordion" href="#{{ id }}-panel">
+		        Translations
+		      </a>
+		</div>		
+		<div id="{{ id }}-panel" class="accordion-body collapse" style="border: 0px">
+	    	<div class="accordion-inner" style="border: 0px">
+	    		{% for lang in langs %}
+	    		{% if lang.lower() != "en" %}
+	    			<div class="remote-file widget">
+						<div class="input-group">
+							<span class="input-group-addon">{{ lang.upper() }}</span>
+							<input class="{{ lang }} form-control" name="{{ id }}-{{ lang.lower() }}" id="{{ id }}-{{ lang.lower() }}" type="text" 
+							value="{% if data[lang] %}{{ data[lang] }}{% endif %}" />
+							<span class="input-group-btn">
+						    	<button class="btn btn-default modal-open" type="button">Select file</button>
+						  	</span>
+						</div>
+						<!-- Modal -->
+						<div class="modal fade">
+						</div>
+					</div>
+				{% endif %}
+				{% endfor %}
+	      	</div>
+    	</div>
+	</div>
+</div>

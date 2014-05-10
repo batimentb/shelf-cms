@@ -1,5 +1,5 @@
 <div class="localized-editor">
-	<textarea class="fr wysiwyg" name="{{ id }}-en" id="{{ id }}-en" style="width: 100%; height: 300px"/>
+	<textarea class="en wysiwyg" name="{{ id }}-en" id="{{ id }}-en" style="width: 100%; height: 300px"/>
 	{% if data['en'] %}{{ data['en'] }}{% endif %}
 	</textarea>
 <br>
@@ -15,7 +15,7 @@
 	    			{% for lang in langs %}
 	    			{% if lang.lower() != "en" %}
 						<h3 class="add-on">{{ lang.upper() }}</h3>
-						<textarea class="fr wysiwyg" name="{{ id }}-{{ lang.lower() }}" id="{{ id }}-{{ lang.lower() }}"/>
+						<textarea class="{{ lang }} wysiwyg" name="{{ id }}-{{ lang.lower() }}" id="{{ id }}-{{ lang.lower() }}"/>
 						{% if data[lang] %}{{ data[lang] }}{% endif %}
 						</textarea>
 					{% endif %}
