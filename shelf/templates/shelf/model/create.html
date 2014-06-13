@@ -1,5 +1,6 @@
-{% extends 'shelf/base/base.html' %}
+{% extends 'admin/master.html' %}
 {% import 'shelf/base/lib.html' as lib with context %}
+{% import 'shelf/model/layout.html' as model_layout with context %}
 
 {% macro extra() %}
   <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
@@ -7,7 +8,7 @@
 
 {% block iscontent %}active{% endblock %}
 
-{% block head %}
+{% block head_css %}
     {{ super() }}
     <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
     <link href="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
@@ -17,58 +18,18 @@
 {% block body %}
     <div class="row" style="margin-top: 50px; background-color: #ffffff">
         <div class="col-xs-12" style="border-bottom: 1px solid #ddd; padding-top: 5px; padding-bottom: 15px; padding-left: 25px">
-            <h1>{{ admin_view.name.upper() }}</h1>
+            {% block model_create_title %}<h1>{{ admin_view.name.upper() }}</h1>{% endblock %}
         </div>
         <div class="col-xs-12"  style="padding-top: 25px; padding-bottom: 15px">
           {% call lib.form_tag(form) %}
               {{ lib.render_form_fields(form) }}
-              {#{ lib.render_form_buttons(return_url, extra()) }#}
           {% endcall %}
         </div>
     </div>
 {% endblock %}
 
-{% block bottom %}
-    <div class="navbar navbar-default navbar-fixed-bottom">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
-            </div>
-            <div class="collapse navbar-collapse">
-                {% block model_menu_bar %}
-                <ul class="nav navbar-nav">
-
-
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                  {% if has_workflow %}
-                    <li class="actions"><a href="{{ return_url }}"><i class="fa fa-times"></i> {{ _gettext('Cancel') }}</a></li>
-                      <li class="actions draft dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><span><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</span> <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li class="actions draft" style="display:none"><a href="javascript:void(0)"><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</a></li>
-                                <li class="actions review"><a href="javascript:void(0)"><i class="fa fa-search"></i> {{ _gettext('Review') }}</a></li>
-                                <li class="actions publish"><a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</a></li>
-                            </ul>
-                        </li>
-                    {% endif %}
-                    <li class="actions"><a href="#" class="add-new"><i class="fa fa-refresh"></i> {{ _gettext('Save and Add') }}</a></li>
-                  <li class="actions"><a role="submit" class="save-model" href="#"><i class="fa fa-check"></i> {{ _gettext('Save') }}</a></li>
-
-
-                </ul>
-                {% endblock %}
-            </div>
-        </div>
-    </div>
-{% endblock %}
-
-{% block tail %}
+{% block tail_js %}
+  {{ lib.navbar(model_layout.create_left_bottom_bar, model_layout.create_right_bottom_bar, admin_view.name, pos="bottom") }}
   {{ super() }}
   <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
   <script src={{ url_for('shelf.static', filename='tinymce/tinymce.min.js') }}></script>

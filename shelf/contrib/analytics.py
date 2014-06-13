@@ -14,6 +14,30 @@ def pretty(d, indent=0):
       else:
          print '\t' * (indent+1) + str(value)
 
+'''class AnalyticsDonut:
+	def __init__(self, metrics, dimensions=None, normalize=None, start=None, end=None):
+		self.metrics = metrics
+		self.dimensions = dimensions
+		self.normalize = normalize
+		self.start = start
+		self.end = end
+
+class RepartitionAnalyticsProvider:
+	def compute(self):
+		data = analytics.get_stats((self.metric,), (self.dimension,), start=datetime.date.today() - datetime.timedelta(days=30))
+		tmp = [(lang.split('-')[0].split('_')[0], int(data[lang][self.metric])) for lang in data]
+        res = {'others': 0}       
+        total = sum([l[1] for l in tmp]) 
+        threshold = total / 50
+        for lang, tot in tmp:
+            if lang not in res:
+                res[lang] = 0
+            if tot >= threshold:
+                res[lang] = res[lang] + tot
+            else:
+                res['others'] = res['others'] + tot
+        return sorted([(x, res[x]) for x in res], key=itemgetter(1), reverse=True)'''
+
 class Analytics():
 	DEFAULT_DIR = 'google-analytics'
 
@@ -124,4 +148,3 @@ class Analytics():
 						self.profile = profiles.get('items')[0].get('id')
 		except:
 			pass
-

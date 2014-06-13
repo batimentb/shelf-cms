@@ -1,28 +1,3 @@
-{% macro content() %}
-
-  <ul class="dropdown-menu">
-     {% for item in admin_view.admin.content() %}
-        {% if item.is_category() %}
-          {% set children = item.get_children() %}
-          {% if children %}
-            {% if item.is_active(admin_view) %}<li class="dropdown-header active">{% else %}<li class="dropdown-header">{% endif %}{{ item.name }}</li>
-            {% for child in children %}
-              {% if child.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-              <a href="{{ child.get_url() }}">{{ child.name }}</a></li>
-            {% endfor %}
-            <li class="divider"></li>
-          {% endif %}
-        {% else %}
-          {% if item.is_accessible() and item.is_visible() %}
-            {% if item.is_active(admin_view) %}<li class="active">{% else %}<li>{% endif %}
-            <a href="{{ item.get_url() }}">{{ item.name }}</a>
-            </li>
-          {% endif %}
-        {% endif %}
-     {% endfor %}
-  </ul>
-{% endmacro %}
-
 {% macro menu() %}
   {% for item in admin_view.admin.menu() %}
     {% if item.is_category() %}
@@ -58,19 +33,6 @@
     {% endif %}
   {% endfor %}
 {% endmacro %}
-
-<div class="alert alert-success">
-  <a href="#" class="alert-link">...</a>
-</div>
-<div class="alert alert-info">
-  <a href="#" class="alert-link">...</a>
-</div>
-<div class="alert alert-warning">
-  <a href="#" class="alert-link">...</a>
-</div>
-<div class="alert alert-danger">
-  <a href="#" class="alert-link">...</a>
-</div>
 
 {% macro messages() %}
   {% with messages = get_flashed_messages(with_categories=True) %}

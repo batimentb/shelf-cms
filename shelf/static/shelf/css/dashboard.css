@@ -12,7 +12,8 @@
 	font-size: 30px;
 }
 
-.widget.text .legend {
+.widget.text .legend,
+.widget.donut .legend {
 	font-size: 12px;
 }
 

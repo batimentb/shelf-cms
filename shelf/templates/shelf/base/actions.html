@@ -22,6 +22,8 @@
     {% if actions %}
     <form id="action_form" action="{{ url }}" method="POST" style="display: none">
         <input type="hidden" id="action" name="action" />
+        <input type="hidden" id="select-all" name="select-all" value="0" />
+        <input type="hidden" id="return-url" name="return-url" value="{{ return_url }}" />
     </form>
     {% endif %}
 {% endmacro %}

@@ -26,15 +26,12 @@ class ShelfAdmin(Admin):
             else:
                 self.library = Library('static', "/static/", name="Files")
         if app:
-            app.register_blueprint(self.library.create_blueprint(self))         
+            app.register_blueprint(self.library.create_blueprint(self))
 
-    def add_widget(self, view):
-        self.index_view.add_widget(view)
+    def add_widget(self, *args, **kwargs):
+        self.index_view.add_widget(*args, **kwargs)
 
-    def add_setting(self, view):
-    	pass
-
-    def menu(self):
+    '''def menu(self):
         tmp = super(ShelfAdmin, self).menu()
         content = tmp[2:]
         content_item = MenuItem("Content")
@@ -48,4 +45,4 @@ class ShelfAdmin(Admin):
     	return super(ShelfAdmin, self).menu_links()
 
     def content(self):
-        return super(ShelfAdmin, self).menu()[2:]
+        return super(ShelfAdmin, self).menu()[2:]'''

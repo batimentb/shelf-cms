@@ -42,7 +42,7 @@ class Shelf:
             return self.model_user.query.get(userid)
 
         self.model_user_view = ShelfUserView(self.model_user, db.session)
-        self.admin.add_view(self.model_user_view)
+        #self.admin.add_view(self.model_user_view)
 
         '''shelf_admin = Blueprint('shelf', 'shelf', url_prefix="/shelf",
             template_folder="templates", static_folder="static")

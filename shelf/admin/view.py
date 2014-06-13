@@ -43,6 +43,8 @@ import shutil
 import shelf.model
 db = shelf.model.db
 
+from sqlalchemy import func
+
 from ..user.base import shelf_login_required
 
 from model import LocalizedString, RemoteFile, LocalizedText, Picture, WorkflowMixin, OrderableMixin
@@ -85,9 +87,10 @@ class DashboardView(AdminIndexView):
     register_template = "shelf/login/signup.html"
     recover_template = "shelf/login/recover.html"
 
-    def add_widget(self, view):
+    def add_widget(self, view, provider):
         if not self.widgets:
             self.widgets = []
+        view.provider = provider
         self.widgets.append(view)
 
     @expose('/signin/', methods=("GET", "POST"))
@@ -283,10 +286,30 @@ class ShelfModelView(sqla.ModelView):
 
         return actions, actions_confirmation
 
+    def handle_action(self, return_view=None):
+        action = request.form.get('action')
+        select_all = request.form.get('select-all')
+        ids = request.form.getlist('rowid')
+
+        handler = self._actions_data.get(action)
+
+        if handler and self.is_action_allowed(action):
+            if select_all == "1":
+                response = handler[0](ids, True)
+            else:
+                response = handler[0](ids)
+
+            if response is not None:
+                return response
+
+        if not return_view:
+            url = url_for('.' + self._default_view)
+        else:
+            url = url_for('.' + return_view)
+
+        return redirect(url)
+
     def init_actions(self):
-        """
-            Initialize list of actions for the current administrative view.
-        """
         self._actions = []
         self._icons = []
         self._actions_data = {}
@@ -317,7 +340,7 @@ class ShelfModelView(sqla.ModelView):
             lazy_gettext('Publish'),
             lazy_gettext('Are you sure you want to publish selected models?'),
             "thumbs-up")
-    def action_publish(self, ids):
+    def action_publish(self, ids, select_all=False):
         try:
             query = get_query_for_ids(self.get_query(), self.model, ids)
 
@@ -345,7 +368,7 @@ class ShelfModelView(sqla.ModelView):
             lazy_gettext('Review'),
             lazy_gettext('Are you sure you want to put selected models for review?'),
             "search")
-    def action_review(self, ids):
+    def action_review(self, ids, select_all=False):
         try:
             query = get_query_for_ids(self.get_query(), self.model, ids)
 
@@ -373,7 +396,7 @@ class ShelfModelView(sqla.ModelView):
             lazy_gettext('Draft'),
             lazy_gettext('Are you sure you want to unpublish selected models?'),
             'file-text-o')
-    def action_draft(self, ids):
+    def action_draft(self, ids, select_all=False):
         try:
             query = get_query_for_ids(self.get_query(), self.model, ids)
 
@@ -433,7 +456,7 @@ class ShelfModelView(sqla.ModelView):
             lazy_gettext('Delete'),
             lazy_gettext('Are you sure you want to delete selected models?'),
             "trash-o")
-    def action_delete(self, ids):
+    def action_delete(self, ids, select_all=False):
         try:
             query = get_query_for_ids(self.get_query(), self.model, ids)
 
@@ -477,6 +500,9 @@ class ShelfModelView(sqla.ModelView):
         # Get count and data
         count, data = self.get_list(page, sort_column, sort_desc,
                                     search, filters)
+        '''dummy, query = self.get_list(page, sort_column, sort_desc,
+                                    search, filters, execute=False)
+        count = query.distinct().count()'''
 
         # Calculate number of pages
         num_pages = count // self.page_size
@@ -693,7 +719,7 @@ class Library(fileadmin.FileAdmin):
     @action('delete',
             lazy_gettext('Delete'),
             lazy_gettext('Are you sure you want to delete these files?'))
-    def action_delete(self, items):
+    def action_delete(self, items, select_all=False):
         return_url = request.args.get('urls')
 
         if not self.can_delete:
