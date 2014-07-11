@@ -1,0 +1,16 @@
+Flask==0.10.1
+Flask-Admin==1.0.8
+Flask-WTF==0.9.5
+Jinja2==2.7.3
+MarkupSafe==0.23
+Pygments==1.6
+-e git+https://github.com/iriahi/shelf-cms.git@981c5098030b434ba83eb318f2924c8087114c8f#egg=ShelfCMS-new
+Sphinx==1.2.2
+WTForms==1.0.5
+Werkzeug==0.9.6
+docutils==0.11
+itsdangerous==0.24
+nose==1.3.3
+requests==2.3.0
+travis==0.0.2
+wsgiref==0.1.2

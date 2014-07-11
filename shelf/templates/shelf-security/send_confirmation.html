@@ -1,0 +1,14 @@
+{% extends "shelf-security/base.html" %}
+{% from "shelf-security/_macros.html" import render_field_with_errors, render_field, render_errors, render_menu with context %}
+
+{% block title %}NEED YOUR CONFIRMATION EMAIL AGAIN ?{% endblock %}
+
+{% block form %}
+  {{ send_confirmation_form.hidden_tag() }}
+  {{ render_field_with_errors(send_confirmation_form.email, "user", class="form-control", placeholder="Email") }}
+  {{ render_field(send_confirmation_form.submit, class="btn btn-default") }}
+
+  {{ render_menu("confirmation") }}
+
+  {{ render_errors(send_confirmation_form) }}
+{% endblock %}

@@ -1,0 +1,103 @@
+{% macro filter_options(btn_class='dropdown-toggle') %}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">
+        {{ _gettext('Add Filter') }}<b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu field-filters">
+        {% for k in filter_groups %}
+        <li>
+            <a href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro filter_header(title="FILTER") %}
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+        <i class="fa fa-times fa-lg"></i>
+    </button>
+    <h1>{{ title }}</h1>
+    <div class="btn-group" style="width: 100%">
+        <button type="button" class="btn btn-lg btn-primary dropdown-toggle add-filter" 
+                data-toggle="dropdown" style="width: 100%">
+            <i class="fa fa-plus-circle"></i> {{ _gettext('Add filter') }} <b class="caret"></b>
+        </button>
+        <ul class="dropdown-menu field-filters">
+            {% for k in filter_groups %}
+            <li>
+                <a style="float: left" href="javascript:void(0)" class="filter" onclick="return false;">{{ k }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endmacro %}
+
+{% macro filter_form() %}
+    <div style="min-height: 300px">
+        <form id="filter_form" method="GET" action="{{ return_url }}">
+        {%- for n, values in enumerate(active_filters) -%}
+            {% set idx, value = values %}
+            {% set filter = filters[idx] %}
+            {% set filter_arg = admin_view.get_filter_arg(idx, filter) %}
+                <div class="row">
+                    <a href="javascript:void(0)" class="btn btn-default remove-filter" title="{{ _gettext('Remove Filter') }}">
+                        <span class="close-icon">&times;</span>&nbsp;{{ filter.name }}
+                    </a>
+                    <select class="filter-op form-control" data-role="select2">
+                        {% for op in filter_groups[filter.name] %}
+                            <option value="{{ op['arg'] }}"{% if idx == op['index'] %} selected="selected"{% endif %}>{{ op['operation'] }}</option>
+                        {% endfor %}
+                    </select>
+                    {%- if filter.options -%}
+                        <select name="flt{{ n }}_{{ filter_arg }}" class="filter-val form-control" data-role="select2">
+                        {%- for d in filter.options %}
+                            <option value="{{ d[0] }}"{% if value == d[0] %} selected{% endif %}>{{ d[1] }}</option>
+                        {%- endfor %}
+                        </select>
+                    {%- else -%}
+                        <input name="flt{{ n }}_{{ filter_arg }}" type="text" value="{{ value or '' }}" class="filter-val form-control"{% if filter.data_type %} data-role="{{ filter.data_type }}"{% endif %}></input>
+                    {%- endif -%}
+                </div>            
+        {% endfor %}
+        </form>
+        <div class="clearfix"></div>
+    </div>
+{% endmacro %}
+
+{% macro filter_footer(filter_groups) %}
+<div style="height: 37px; width: 100%; padding: 0px;">
+    <ul class="nav nav-pills pull-right" style="display: inline-block;">
+        <li class="actions clean">
+            <a href="{{ clear_search_url }}" style="color: #fff">Clean filters</a>
+        </li>
+        <li class="actions apply">
+            <a href="javascript:void(0)" style="color: #fff">Apply</a>
+        </li>
+    </ul>                    
+</div>
+{% endmacro %}
+
+{% macro search_form(input_class="span2") %}
+    <form method="GET" action="{{ return_url }}" class="search-form">
+        {% if sort_column is not none %}
+            <input type="hidden" name="sort" value="{{ sort_column }}"></input>
+        {% endif %}
+        {% if sort_desc %}
+            <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
+        {% endif %}
+        <div class="input-group">
+            {% if search %}
+                <span class="input-group-btn">
+                    <a class="btn btn-default" href="{{ clear_search_url }}" type="button">
+                        <icon class="fa fa-times-circle fa-lg"></icon>
+                    </a>
+                </span>
+                <input type="text" name="search" value="{{ search }}" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}"></input>
+            {% else %}
+                <input type="text" name="search" class="{{ input_class }} form-control" placeholder="{{ _gettext('Search') }}"></input>
+            {% endif %}
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">Search</button>
+            </span>
+        </div>
+    </form>
+{% endmacro %}

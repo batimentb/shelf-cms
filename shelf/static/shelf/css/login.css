@@ -1,0 +1,65 @@
+input, a, label, h1, button {
+	font-family: 'Open Sans', sans-serif !important;
+	font-weight: 300 !important;
+	border-radius: 0 !important;
+	font-size: 12px;
+}
+
+input {
+	border: 0px none !important;
+}
+
+span.input-group-addon {
+	border-radius: 0 !important;
+	background-color: white;
+	border: 0px none !important;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+}
+
+input[type=password] {
+	margin-top: 3px !important;
+}
+
+input#remember {
+	margin-top: 12px !important;
+	
+}
+
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {   
+  border-color: #ccc;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(0, 0, 0, 0.4);
+  outline: 0 none;
+}
+
+i {
+	width: 11px;
+}
+
+a {
+	color: #f14461 !important;
+}
+
+h1 {
+	margin-top:	5px !important;
+}
+
+.alert
+{
+    position: fixed;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+}
+
+input#submit {
+	width: 100%;
+	margin-top: 10px !important;
+	background-color: #ff4262 !important;
+	color: #fff !important;
+	border: 0px none !important;
+}
+
+.has-error input {
+	border: 1px solid rgba(209, 64, 64, 0.9) !important;
+}

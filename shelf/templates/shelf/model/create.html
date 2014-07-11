@@ -1,0 +1,64 @@
+{% extends 'admin/master.html' %}
+{% import 'shelf/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'shelf/model/layout.html' as model_layout with context %}
+
+{% macro extra_btn() %}
+    <li class="actions">
+        <a role="submit" class="_add_another" href="javascript:void(0)">
+            <i class="fa fa-refresh"></i> {{ _gettext('Save and Add') }}
+        </a>
+    </li>
+{% endmacro %}
+
+{% macro extra_fld() %}
+{% endmacro %}
+
+{% block head %}
+    {{ super() }}
+    <link href="{{ admin_static.url(filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="row create">
+        <div class="col-xs-12 title">
+            {% block model_create_title %}
+                <h1>{{ admin_view.name.upper() }}</h1>
+            {% endblock %}
+        </div>
+        <div class="col-xs-12 content">
+          {% call lib.form_tag(form) %}
+              {{ lib.render_form_fields(form, form_opts=form_opts, extra=extra_fld()) }}
+          {% endcall %}
+        </div>
+{% endblock %}
+
+{% block page_body %}
+    {{ super() }}
+    {% call lib.navbar(admin_view.name, pos="bottom") %}
+        {{ lib.render_form_buttons(return_url, extra_btn()) }}
+    {% endcall %}
+{% endblock %}
+
+{% block tail_js %}
+    {{ super() }}
+    <script src="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
+    <script language="javascript">
+        (function($) {
+            $('a.save-model').click(function (e) {
+                $("form.model-form").submit();
+                e.stopPropagation();
+            });
+
+            $('a._add_another').click(function (e) {
+                $("form.model-form").append(
+                    "<input type='hidden' name='_add_another' value='1'></input>"
+                );
+                $("form.model-form").submit();
+                e.stopPropagation();
+            });
+        })(jQuery);
+    </script>
+{% endblock %}
