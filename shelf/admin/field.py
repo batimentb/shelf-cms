@@ -101,14 +101,14 @@ class PictureField(TextField):
             db.session.add(pic)
             setattr(obj, name, pic)
             global_render = True
-            
+
         for param in self.data:
             setattr(pic, param, self.data[param])
-        
+
         if self.picture_formats:
             for idx, (name, max_height) in enumerate(self.picture_formats):
                 size = (int(max_height * self.ratio), max_height)
-                
+
                 try:
                     format = pic.formats[idx]
                     format_render = format.width != size[0] or format.height != size[1]
@@ -119,7 +119,7 @@ class PictureField(TextField):
                 format.name = name
                 format.height = size[1]
                 format.width = size[0]
-                
+
                 if global_render or format_render:
                     #im = Image.open(urllib.unquote(url_for('static', filename=pic.source)[1:]))
                     #im = im.convert('RGB').resize(size, Image.ANTIALIAS)
@@ -133,7 +133,7 @@ class PictureField(TextField):
                 for idx in range(len(self.picture_formats), len(pic.formats)):
                     format = pic.formats.pop()
                     del format'''
-            
+
 
     def process_formdata(self, valuelist):
         print valuelist
@@ -149,11 +149,20 @@ class PictureField(TextField):
         else:
             self.data = {"path": None}
 
+class FullWysiwygTextWidget(TextArea):
+    def __call__(self, *args, **kwargs):
+        c = kwargs.pop('class', '') or kwargs.pop('class_', '')
+        kwargs['class'] = u'%s %s' % ('wysiwyg-full', c)
+        return super(FullWysiwygTextWidget, self).__call__(*args, **kwargs)
+
 class WysiwygTextWidget(TextArea):
     def __call__(self, *args, **kwargs):
         c = kwargs.pop('class', '') or kwargs.pop('class_', '')
         kwargs['class'] = u'%s %s' % ('wysiwyg', c)
         return super(WysiwygTextWidget, self).__call__(*args, **kwargs)
+
+class FullWysiwygTextField(TextAreaField):
+    widget = FullWysiwygTextWidget()
 
 class WysiwygTextField(TextAreaField):
     widget = WysiwygTextWidget()
@@ -201,7 +210,7 @@ class LocalizedTextField(TextField):
                 for lang in self.langs:
                     if self.name+"-"+lang in formdata:
                         self.raw_data.append(formdata.getlist(self.name+"-"+lang)[0])
-                    
+
                 self.process_formdata(self.raw_data)
             except ValueError as e:
                 self.process_errors.append(e.args[0])
@@ -235,7 +244,7 @@ class LocalizedTextField(TextField):
         for lang in self.data:
             if lang == "en":
                 continue
-            
+
             res = None
             for t in lstring.trad:
                 if t.lang == lang:
@@ -267,7 +276,7 @@ class LocalizedWysiwygTextField(LocalizedTextField):
         for lang in self.data:
             if lang == "en":
                 continue
-            
+
             res = None
             for t in lstring.trad:
                 if t.lang == lang:

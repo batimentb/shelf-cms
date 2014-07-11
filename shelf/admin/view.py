@@ -81,6 +81,10 @@ from ..user.form import *
 class DashboardView(AdminIndexView):
     widgets = []
 
+    login_template = "shelf/login/login.html"
+    register_template = "shelf/login/signup.html"
+    recover_template = "shelf/login/recover.html"
+
     def add_widget(self, view):
         if not self.widgets:
             self.widgets = []
@@ -88,24 +92,24 @@ class DashboardView(AdminIndexView):
 
     @expose('/signin/', methods=("GET", "POST"))
     def signin(self):
-    	if validate_login_on_submit(request.form):
-    		return redirect(request.args.get("next") or url_for("admin.index"))
-    	else:
-    		return render_template("shelf/login/login.html", form=LoginForm(request.form))
+        if validate_login_on_submit(request.form):
+            return redirect(request.args.get("next") or url_for("admin.index"))
+        else:
+            return render_template(self.login_template, form=LoginForm(request.form))
 
     @expose('/signup/', methods=("GET", "POST"))
     def signup(self):
         if validate_register_on_submit(request.form):
             return redirect(request.args.get("next") or url_for("admin.signin"))
         else:
-    	   return render_template("shelf/login/signup.html", form=RegisterForm(request.form))
+            return render_template(self.register_template, form=RegisterForm(request.form))
 
     @expose('/recover/', methods=("GET", "POST"))
     def recover(self):
         if validate_recover_on_submit(request.form):
             return redirect(request.args.get("next") or url_for("admin.signin"))
         else:
-    	   return render_template("shelf/login/recover.html", form=RecoverForm(request.form))
+            return render_template(self.recover_template, form=RecoverForm(request.form))
 
     @expose('/logout/', methods=("GET",))
     @shelf_login_required
@@ -218,7 +222,7 @@ class ShelfModelView(sqla.ModelView):
         """
         columns = super(ShelfModelView, self).scaffold_sortable_columns()
 
-        
+
         for k, v in self.model.__dict__.items():
             if hasattr(v, "mapper"):
                 if issubmodel(v.mapper.class_, 'LocalizedString') or \
@@ -230,13 +234,13 @@ class ShelfModelView(sqla.ModelView):
 
     def after_model_change(self, form, model, is_created):
         if is_created:
-            flash('{} was successfully created.'.format(model.__class__.__name__))
+            flash('{0} was successfully created.'.format(model.__class__.__name__))
         else:
-            flash('{} was successfully updated.'.format(model.__class__.__name__))
+            flash('{0} was successfully updated.'.format(model.__class__.__name__))
 
     def delete_model(self, model):
         if super(ShelfModelView, self).delete_model(model):
-            flash('{} was successfully deleted.'.format(model.__class__.__name__))
+            flash('{0} was successfully deleted.'.format(model.__class__.__name__))
             return True
         return False
 
@@ -328,9 +332,9 @@ class ShelfModelView(sqla.ModelView):
             self.session.commit()
 
             if count == 1:
-                flash('{} was successfully published.'.format(name))
+                flash('{0} was successfully published.'.format(name))
             else:
-                flash('{} {}s were successfully published.'.format(count, name.lower()))
+                flash('{0} {1}s were successfully published.'.format(count, name.lower()))
         except Exception as ex:
             if self._debug:
                 raise
@@ -356,9 +360,9 @@ class ShelfModelView(sqla.ModelView):
             self.session.commit()
 
             if count == 1:
-                flash('{} was successfully put for review.'.format(name))
+                flash('{0} was successfully put for review.'.format(name))
             else:
-                flash('{} {}s were successfully put for review.'.format(count, name.lower()))
+                flash('{0} {1}s were successfully put for review.'.format(count, name.lower()))
         except Exception as ex:
             if self._debug:
                 raise
@@ -384,9 +388,9 @@ class ShelfModelView(sqla.ModelView):
             self.session.commit()
 
             if count == 1:
-                flash('{} was successfully unpublished.'.format(name))
+                flash('{0} was successfully unpublished.'.format(name))
             else:
-                flash('{} {}s were successfully unpublished.'.format(count, name.lower()))
+                flash('{0} {1}s were successfully unpublished.'.format(count, name.lower()))
         except Exception as ex:
             if self._debug:
                 raise
@@ -419,9 +423,9 @@ class ShelfModelView(sqla.ModelView):
             db.session.commit()
 
             if count == 1:
-                flash('{} was successfully reordered.'.format(name))
+                flash('{0} was successfully reordered.'.format(name))
             else:
-                flash('{} {}s were successfully reordered.'.format(count, name.lower()))
+                flash('{0} {1}s were successfully reordered.'.format(count, name.lower()))
         except Exception, ex:
             flash(gettext('Failed to sort models. %(error)s', error=str(ex)), 'error')
 
@@ -447,9 +451,9 @@ class ShelfModelView(sqla.ModelView):
             self.session.commit()
 
             if count == 1:
-                flash('{} was successfully deleted.'.format(name))
+                flash('{0} was successfully deleted.'.format(name))
             else:
-                flash('{} {}s were successfully deleted.'.format(count, name.lower()))
+                flash('{0} {1}s were successfully deleted.'.format(count, name.lower()))
         except Exception as ex:
             if self._debug:
                 raise
@@ -588,7 +592,7 @@ class ShelfModelView(sqla.ModelView):
                            has_order=issubclass(self.model, OrderableMixin),
                            return_url=return_url)
 
-    
+
     @expose('/edit/', methods=('GET', 'POST'))
     @shelf_login_required
     def edit_view(self):
@@ -695,7 +699,7 @@ class Library(fileadmin.FileAdmin):
         if not self.can_delete:
             flash(gettext('File deletion is disabled.'), 'error')
             if return_url:
-                return redirect(return_url) 
+                return redirect(return_url)
             else:
                 return
 
@@ -709,7 +713,7 @@ class Library(fileadmin.FileAdmin):
                 except Exception as ex:
                     flash(gettext('Failed to delete file: %(name)s', name=ex), 'error')
                 if return_url:
-                    return redirect(return_url) 
+                    return redirect(return_url)
                 else:
                     return
 
@@ -810,7 +814,7 @@ class Library(fileadmin.FileAdmin):
         base_path, full_path, path = self._normalize_path(path)
 
         return_url = request.args.get('url') or self._get_dir_url('.index', op.dirname(path))
-        
+
         if not self.can_rename:
             flash(gettext('Renaming is disabled.'))
             return redirect(return_url)
@@ -1207,7 +1211,7 @@ class ShelfPageView(ShelfModelView):
 
     def register_form(self, cls, form):
         self.pages_form[cls] = form
-    
+
     def edit_form(self, obj=None):
         """
             Instantiate model editing form and return it.

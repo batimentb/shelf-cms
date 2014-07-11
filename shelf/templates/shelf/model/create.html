@@ -42,7 +42,7 @@
             <div class="collapse navbar-collapse">
                 {% block model_menu_bar %}
                 <ul class="nav navbar-nav">
-                  
+
 
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -55,12 +55,12 @@
                                 <li class="actions review"><a href="javascript:void(0)"><i class="fa fa-search"></i> {{ _gettext('Review') }}</a></li>
                                 <li class="actions publish"><a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</a></li>
                             </ul>
-                        </li>   
-                    {% endif %}       
+                        </li>
+                    {% endif %}
                     <li class="actions"><a href="#" class="add-new"><i class="fa fa-refresh"></i> {{ _gettext('Save and Add') }}</a></li>
                   <li class="actions"><a role="submit" class="save-model" href="#"><i class="fa fa-check"></i> {{ _gettext('Save') }}</a></li>
-                  
-                  
+
+
                 </ul>
                 {% endblock %}
             </div>
@@ -71,6 +71,7 @@
 {% block tail %}
   {{ super() }}
   <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+  <script src={{ url_for('shelf.static', filename='tinymce/tinymce.min.js') }}></script>
   <script src="{{ url_for('shelf.static', filename='shelf/js/wysihtml5-0.3.0.min.js') }}"></script>
   <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
   <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.min.js') }}"></script>
@@ -122,10 +123,15 @@
               $('ul.dropdown-menu li.actions.publish').hide();
               $('#shelf_state').val("public");
             });
-            
+
+       tinymce.init({
+           selector: ".wysiwyg-full",
+           plugins: "autoresize,paste,image,link,code,searchreplace,table,media",
+         });
+
             $('.wysiwyg').wysihtml5({
                 html: true,
-            });     
+            });
         })(jQuery);
     </script>
 {% endblock %}
