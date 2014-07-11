@@ -2,26 +2,19 @@ from setuptools import setup, find_packages
 
 setup(
     name='ShelfCMS',
-    version='0.7.2',
+    version='0.8.0',
     url='https://github.com/iriahi/shelf-cms',
     license='BSD',
     author='Ismael Riahi',
     author_email='ismael@batb.fr',
-    description='Enhancing flask microframework with beautiful admin and cms-like features',
+    description="""Enhancing flask microframework with beautiful admin
+                and cms-like features""",
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
         'Flask',
-        'Flask-Admin==1.0.7',
-	'Flask-WTF',
-	'Flask-SQLAlchemy',
-        'Flask-Login',
-	'Flask-Mail',
-	'Flask-Bcrypt',
-	'google-api-python-client',
-	'python-gflags',
-	'Flask-Principal',
-	'Flask-Cache',
+        'Flask-Admin',
+        'Flask-WTF'
     ]
 )
