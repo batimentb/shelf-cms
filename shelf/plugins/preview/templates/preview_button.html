@@ -1,0 +1,5 @@
+{% if model.get_url() %}
+<li class="actions">
+    <a target="_new" href="{{ model.get_url() }}">{{ _gettext('Preview') }}</a>
+</li>
+{% endif %}

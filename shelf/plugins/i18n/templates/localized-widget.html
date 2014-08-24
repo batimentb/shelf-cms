@@ -1,0 +1,29 @@
+{{ field[0] }}
+</div>
+<div class="col-xs-2">
+	<button type="button" class="btn btn-default accordion-toggle" 
+    data-toggle="collapse"  href="#{{ field.id }}-panel">TRANSLATE</button>
+</div>
+<div class="accordion col-xs-12" id="{{ field.id }}-accordion" style="border: 0px; margin-top: 10px; padding: 0">
+	<div class="accordion-group">
+		<div id="{{ field.id }}-panel" class="accordion-body collapse" style="border: 0px">
+	    	<div class="accordion-inner" style="border: 0px">
+                    {% for subfield in field[1:] %}
+                        {% set lang = field.langs[loop.index] %}
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <p>{{ lang.upper() }}</p>
+                            </div>
+                            <div class="col-xs-8">
+                                {{ subfield }}
+                            </div>
+                            <div class="col-xs-2">
+                                <button type="button" class="btn btn-default">
+                                    USE {{ field.langs[0].upper() }}
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+	      	</div>
+    	</div>    	
+	</div>

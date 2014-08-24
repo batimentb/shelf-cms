@@ -1,0 +1,30 @@
+<script language="javascript">
+        (function($) {
+        	$('ul.dropdown-menu li.actions.draft > a').click(function (e) {
+              $('li.actions.dropdown > a.dropdown-toggle > span').html($(this).html());
+              $('li.actions.dropdown').removeClass("review publish").addClass("draft");
+              $('ul.dropdown-menu li.actions.review').show();
+              $('ul.dropdown-menu li.actions.publish').show();
+              $('ul.dropdown-menu li.actions.draft').hide();
+              $('#state').val("draft");
+            });
+
+            $('ul.dropdown-menu li.actions.review > a').click(function (e) {
+              $('li.actions.dropdown > a.dropdown-toggle > span').html($(this).html());
+              $('li.actions.dropdown').removeClass("draft publish").addClass("review");
+              $('ul.dropdown-menu li.actions.draft').show();
+              $('ul.dropdown-menu li.actions.publish').show();
+              $('ul.dropdown-menu li.actions.review').hide();
+              $('#state').val("review");
+            });
+
+            $('ul.dropdown-menu li.actions.publish > a').click(function (e) {
+              $('li.actions.dropdown > a.dropdown-toggle > span').html($(this).html());
+              $('li.actions.dropdown').removeClass("draft review").addClass("publish");
+              $('ul.dropdown-menu li.actions.draft').show();
+              $('ul.dropdown-menu li.actions.review').show();
+              $('ul.dropdown-menu li.actions.publish').hide();
+              $('#state').val("published");
+            });
+         })(jQuery);
+    </script>

@@ -316,6 +316,11 @@ ul.nav > li.disabled > a
 
 /* Model list */
 
+.create, .title, .content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 .model-list a
 {
   color: #232323;
@@ -324,6 +329,39 @@ ul.nav > li.disabled > a
 .model-list i
 {
   font-size: 1.2em !important;
+}
+
+.model-form > fieldset > .form-group
+{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.model-form > fieldset > .form-group .inline-field
+{
+  background-color: #f9f9f9;
+}
+
+.model-form > fieldset > .form-group .inline-field:nth-child(even)
+{
+  background-color: white;
+}
+
+.model-form > fieldset > .form-group:nth-child(even)
+{
+  background-color: #f9f9f9;
+}
+
+.model-form > fieldset > .form-group:nth-child(even) .inline-field
+{
+  background-color: white;
+}
+
+.model-form > fieldset > .form-group:nth-child(even) .inline-field:nth-child(even)
+{
+  background-color: #f9f9f9;
 }
 
 /* Progress */

@@ -3,7 +3,12 @@ from actions import ActionsMixin
 from flask.ext.admin.babel import lazy_gettext, ngettext, gettext
 from flask.ext.admin.actions import action
 from flask.ext.admin.base import AdminIndexView
-from flask import flash, redirect, url_for
+from flask import flash, redirect, url_for, request
+from sqlalchemy.orm import joinedload
+from flask.ext.admin.contrib.sqla import tools
+from sqlalchemy import or_
+from field import ShelfInlineFieldList
+from form import ModelConverter, InlineModelConverter
 
 class IndexView(AdminIndexView):
     def __init__(self, name=None, category=None,
@@ -21,8 +26,70 @@ class SQLAModelView(sqla.ModelView, ActionsMixin):
     create_template = "shelf/model/create.html"
     edit_template = "shelf/model/edit.html"
 
+    sort_overrides = {}
+
+    model_form_converter = ModelConverter
+    inline_model_form_converter = InlineModelConverter
+
+    def __init__(self, *args, **kwargs):
+        super(SQLAModelView, self).__init__(*args, **kwargs)
+        self.extensions = {}
+        if self.form_overrides is None:
+            self.form_overrides = {}
+        if self.form_args is None:
+            self.form_args = {}
+        if self.sort_overrides is None:
+            self.sort_overrides = {}
+
+    def scaffold_sortable_columns(self):
+        columns = sqla.ModelView.scaffold_sortable_columns(self)
+        if hasattr(self, "sort_overrides"):
+            for k, v in self.model.__dict__.items():
+                if hasattr(v, "mapper"):
+                    cls = v.mapper.class_
+                    for mixin in self.sort_overrides:
+                        if issubclass(cls, mixin) and k not in columns:
+                            columns[k] = v
+        return columns
+
+    def _order_by(self, query, joins, sort_field, sort_desc):
+        if hasattr(sort_field, "mapper"):
+            for mixin in self.sort_overrides:                
+                if issubclass(sort_field.mapper.class_, mixin):
+                    return self.sort_overrides[mixin](query, joins, sort_field, sort_desc)
+        query, joins = SQLAModelView._order_by(self, query, joins, sort_field, sort_desc)
+        return query, joins
+
+    def extend_view(self, endpoint, block, template):
+        if endpoint not in self.extensions:
+            self.extensions[endpoint] = {}
+        if block not in self.extensions[endpoint]:
+            self.extensions[endpoint][block] = []
+        self.extensions[endpoint][block].append(template)
+
+    def extend_form(self, key, field, args):
+        self.form_overrides[key] = field
+        self.form_args[key] = args
+
+    def extend_sort(self, cls, fct):
+        self.sort_overrides[cls] = fct
+
     def additionnal_context(self):
-        return ()
+        view, method = request.endpoint.split('.')
+        extensions = {}
+        for view_name in (request.endpoint, 
+                "modelview.{}".format(method)):
+            if view_name in self.extensions:
+                view_extensions = self.extensions[view_name]
+                for block in view_extensions:
+                    if block not in extensions:
+                        extensions[block] = []
+                    for template in view_extensions[block]:
+                        extensions[block].append(template)
+
+        return {
+            "views_extensions": extensions
+        }
 
     def create_blueprint(self, admin):
         bp = super(SQLAModelView, self).create_blueprint(admin)

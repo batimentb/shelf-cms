@@ -16,4 +16,14 @@ class Admin(flask_admin.Admin):
         	url = kwargs['url'] if 'url' in kwargs else None
         	kwargs["index_view"] = IndexView(endpoint=endpoint, url=url, template='shelf/index.html')
 
+        self.css = []
+        self.js = []
+
+        self.auto_joins = []
+        self.filters = []
+        self.form = []
+        self.inline_form_models = []
+        self.list_columns = []
+        self.sortable_columns = []
+
         super(Admin, self).__init__(*args, **kwargs)

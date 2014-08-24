@@ -1,0 +1,130 @@
+<div class="modal-dialog">
+    <div class="modal-content" style='border-radius: 0px'>
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+            {% if dir_path %}
+            <h1>/{{ dir_path.upper() }}</h1>
+            {% else %}
+            <h1>{{ admin_view.name.upper() }}</h1>
+            {% endif %}
+        </div>
+
+
+        <div class="modal-body"  style="padding: 0px; overflow: hidden">
+                <div class="row" style="background-color: #ffffff">
+                    {% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
+                {% for name, path, is_dir, size in items %}
+                <div class="files col-xs-6" style="height: 170px"> 
+                    {% if is_dir %}
+                    <a class="thumbnail link" href="{{ get_dir_url('.modal_iconic_index', path)|safe }}" style="vertical-align: bottom; text-align: center; height: 150px; border: 0px none">
+                    {% else %}
+                    <div class="thumbnail" style="vertical-align: bottom; text-align: center; height: 150px; border: 0px none">
+                    {% endif %}
+                   
+                    {% if is_dir %}    
+                            <i class="fa {% if name == ".." %}fa-arrow-circle-up{% else %}fa-folder{% endif %} fa-4x"style="padding-top: 30px; color: #d2d2d2"></i>
+                            <div class="caption" style="margin: 15px">
+                                <span>{{ name }}</span>
+                            </div>
+                    {% else %}
+                        {% if mimes[path] == "image" %}                        
+                            <img src="{{ get_file_url(path)|safe }}" style="max-height: 100px; min-height: 100px; padding-top: 10px"/>
+                            <div class="caption">
+                                <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
+                            </div>
+                        {% else %}
+                            <i class="fa {{ icons_by_mime[mimes[path]] }} fa-4x" style="padding-top: 26px; color: #d2d2d2"></i>
+                            <div class="caption" style="margin: 15px">
+                                <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
+                            </div>
+                        {% endif %}  
+                    {% endif %}
+                {% if is_dir %}
+                </a>
+                {% else %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+
+        <div class="modal-footer">
+
+                <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">
+                    <ul class="nav nav-pills" style="float: left; display: inline-block">
+                        <li>
+                            {% if dir_path %}
+                            <a href="{{ url_for('.modal_index', path=dir_path) }}"
+                            class="link">
+                            {% else %}
+                            <a href="{{ url_for('.modal_index') }}"
+                            class="link">
+                            {% endif %}
+                                <i class="fa fa-th-list fa-lg"></i> List</a>
+                            </li>
+                    </ul>
+
+                    {% block model_menu_bar %}
+                    <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580" >
+                        <li class="actions validate disabled">
+                            <a href="javascript:void(0)"  style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
+                        </li>
+                        <li class="actions cancel">
+                            <a href="javascript:void(0)"  style="color: #fff"><i class="fa fa-times"></i>  Cancel</a>
+                        </li>                        
+                    </ul>
+                    {% endblock %}
+                </div>
+        </div>
+    </div> 
+</div>
+
+<script>
+$('a.link').click(function() {
+    $(this).closest('.modal').load($(this).attr('href'));
+    return false;
+});
+$('div.thumbnail').click(function() {
+    if ($(this).hasClass('selected'))
+    {
+        $(this).removeClass('selected');
+    }
+    else
+    {
+        $('div.thumbnail.selected').removeClass('selected');
+        $(this).addClass('selected');
+    }
+
+    if ($('div.thumbnail.selected').length > 0)
+    {
+        $('li.actions.validate').removeClass('disabled');
+    }
+    else
+    {
+        $('li.actions.validate').addClass('disabled');
+    }
+    
+    return false;
+});
+
+$('li.actions.cancel').click(function() {
+    $(this).closest('.modal').modal('hide');
+});
+
+$('li.actions.validate').click(function() {
+    if ($(this).closest('.form-group').find('input').hasClass('remote-file'))
+    {
+        $(this).closest('.form-group').find('input').val($('div.thumbnail.selected a').attr('href'));
+        $(this).closest('.modal').modal('hide');
+    }
+    else if ($(this).closest('.form-group').find('input').hasClass('picture'))
+    {
+        $(this).closest('.form-group').find('img').attr('src', $('div.thumbnail.selected a').attr('href'));
+        $(this).closest('.form-group').find('input[type=hidden]').val($('div.thumbnail.selected a').attr('href'));
+        $(this).closest('.modal').modal('hide');
+    }    
+});
+
+</script>
+

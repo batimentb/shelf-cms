@@ -1,0 +1,261 @@
+{% extends 'admin/master.html' %}
+{% import 'shelf/lib.html' as lib with context %}
+{% import 'shelf/actions.html' as actionlib with context %}
+
+{% block body %}
+    <div class="row" style="margin-top: 50px; background-color: #ffffff">
+        <div class="col-xs-12" style="padding: 0px; padding-bottom: 15px; padding-top: 5px; padding-left: 25px;">
+            {% if dir_path %}
+                <h1>/{{ dir_path.upper() }}</h1>
+            {% else %}
+                <h1>{{ admin_view.name.upper() }}</h1>
+            {% endif %}
+        </div>
+        {% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
+            {% for name, path, is_dir, size in items %}
+            <div class="files col-lg-3 col-md-4 col-sm-6 col-xs-6" style="height: 170px"> 
+                {% if is_dir %}
+                <a class="thumbnail" href="{{ get_dir_url('.icon_index', path)|safe }}" style="vertical-align: bottom; text-align: center; height: 150px; border: 0px none">
+                {% else %}
+                <div class="thumbnail" style="vertical-align: bottom; text-align: center; height: 150px; border: 0px none">
+                {% endif %}
+                
+                    {% if actions %}
+                        {% if not is_dir %}
+                        <input class="action-checkbox" name="rowid" type="checkbox" style="position: absolute; top: 10px; left: 25px" value="{{ path }}" />
+                        {% endif %}
+                    {% endif %}
+                
+                {%- if admin_view.can_delete and path -%}
+                    {% if is_dir %}
+                        {% if name != '..' and admin_view.can_delete_dirs %}
+                            {% if dir_path %}
+                            <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.icon_index', path=dir_path) }}" style="top: 10px; right: 25px; position: absolute">
+                            {% else %}
+                            <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.icon_index') }}" style="top: 10px; right: 25px; position: absolute">
+                            {% endif %}
+                                <input type="hidden" name="path" value="{{ path }}"></input>
+                                <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                                    <i class="fa fa-times-circle fa-lg"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% else %}                        
+                        {% if dir_path %}
+                        <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.icon_index', path=dir_path) }}" style="top: 10px; right: 25px; position: absolute">
+                        {% else %}
+                        <form class="icon" method="POST" action="{{ url_for('.delete') }}?url={{ url_for('.icon_index') }}" style="top: 10px; right: 25px; position: absolute">
+                        {% endif %}
+                            <input type="hidden" name="path" value="{{ path }}"></input>
+                            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+                                <i class="fa fa-times-circle fa-lg"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+                {% if admin_view.can_rename and path and name != '..' %}
+                    <button class="icon rename" data-href="{{ url_for('.rename', path=path) }}" style="top: 8px; right: 50px; position: absolute; background: none; border: 0px none">
+                        <i class="fa fa-pencil fa-lg"></i>
+                    </button>
+                {% endif %}
+
+                {% if is_dir %}    
+                        <i class="fa {% if name == ".." %}fa-arrow-circle-up{% else %}fa-folder{% endif %} fa-4x" style="padding-top: 30px; color: #d2d2d2"></i>
+                        <div class="caption" style="margin: 15px">
+                            <span class="filename">{{ name }}</span>
+                        </div>
+                {% else %}
+                    {% if mimes[path] == "image" %}                        
+                        <img src="{{ get_file_url(path)|safe }}" style="max-height: 100px; min-height: 100px; padding-top: 10px"/>
+                        <div class="caption">
+                            <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span class="filename">{{ name }}</span></a>
+                        </div>
+                    {% else %}
+                        <i class="fa {{ icons_by_mime[mimes[path]] }} fa-4x" style="padding-top: 26px; color: #d2d2d2"></i>
+                        <div class="caption" style="margin: 15px">
+                            <a class="link-file" style="color: #4c4c4c" href="{{ get_file_url(path)|safe }}" target="_new"><span class="filename">{{ name }}</span></a>
+                        </div>
+                    {% endif %}  
+                {% endif %}
+            {% if is_dir %}
+            </a>
+            {% else %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% if dir_path %}
+    {{ actionlib.form(actions, url_for('.action_view') + "?url=" + url_for('.icon_index', path=dir_path)) }}
+    {% else %}
+    {{ actionlib.form(actions, url_for('.action_view') + "?url=" + url_for('.icon_index')) }}
+    {% endif %}
+    <div class="modal fade" id="dir-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+                    <h1>NEW DIRECTORY</h1>
+                </div>
+                <div class="modal-body" style="padding: 0px; overflow: hidden">
+                    {% if dir_path %}
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir', path=dir_path) }}?url={{ url_for('.icon_index', path=dir_path) }}">
+                    {% else %}
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.mkdir') }}?url={{ url_for('.icon_index', path=dir_path) }}">
+                    {% endif %}                    
+                        <label for="name" class="control-label">Name</label>
+                            <input class="form-control" type="text" id="name" name="name" />
+                    </form>
+                    <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">                    
+                    <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580">
+                        <li class="actions validate">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
+                        </li>
+                        <li class="actions cancel">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-times"></i>  Cancel</a>
+                        </li>
+                        
+                    </ul>
+                    
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ren-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+                    <h1>RENAME</h1>
+                </div>
+                <div class="modal-body" style="padding: 0px; overflow: hidden">
+                    <form method="post" class="form-inline" style="margin: 15px" action="{{ url_for('.rename') }}">
+                        <label for="name" class="control-label">Name</label>
+                            <input class="form-control" type="text" id="name" name="name" />
+                    </form>
+                    <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">                    
+                    <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580">
+                        <li class="actions validate">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
+                        </li>
+                        <li class="actions cancel">
+                            <a href="javascript:void(0)" style="color: #fff"><i class="fa fa-times"></i>  Cancel</a>
+                        </li>
+                        
+                    </ul>
+                    
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_body %}
+    {{ super() }}
+    {% call lib.navbar("TITRE", pos="bottom") %}
+        {% block model_menu_bar %}
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-th fa-lg"></i>  Layout</a>
+                <ul class="dropdown-menu">
+                    {% if dir_path %}
+                    <li><a href="{{ url_for('.index', path=dir_path) }}">List</a></li>
+                    <li><a href="{{ url_for('.icon_index', path=dir_path) }}">Icons</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('.index') }}">List</a></li>
+                    <li><a href="{{ url_for('.icon_index') }}">Icons</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% if admin_view.can_upload %}
+            <li class="actions">
+                <a href="{{ get_dir_url('.upload', path=dir_path) }}"><i class="fa fa-download"></i>  Upload File</a>
+            </li>
+            {% endif %}
+            {% if admin_view.can_mkdir %}
+            <li class="actions new">
+                <a href="javascript:void(0)"><i class="fa fa-folder"></i>  New directory</a>
+            </li>
+            {% endif %}
+            {% if actions %}
+            <li class="actions delete disabled">
+                <a href="javascript:void(0)" onclick="return modelActions.execute('{{ actions[0][0] }}');"><i class="fa fa-trash-o"></i>  {{ _gettext(actions[0][1]) }}</a>
+            </li>
+            {% endif %}
+        </ul>
+        {% endblock %}
+    {% endcall %}
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='shelf/js/form.js') }}"></script>
+    <script src="{{ url_for('admin.static', filename='admin/js/filters.js') }}"></script>
+
+    {{ actionlib.script(_gettext('Please select at least one model.'),
+                      actions,
+                      actions_confirmation) }}
+
+    <script language="javascript">
+        (function($) {
+            $(".files > div").click(function () {
+                if ($(this).find('input.action-checkbox').length == 0)
+                    return;
+                if ($(this).hasClass('selected'))
+                {
+                    $(this).removeClass('selected');
+                    $(this).closest('.files').find('input.action-checkbox').prop("checked", false);
+                }
+                else
+                {
+                    $(this).addClass('selected');
+                    $(this).closest('.files').find('input.action-checkbox').prop("checked", true);
+                }
+
+                if ($(".files .selected").length > 0)
+                {
+                    $("li.actions.delete").removeClass('disabled');
+                }
+                else
+                {
+                    $("li.actions.delete").addClass('disabled');
+                }           
+            });
+
+            $('button.rename').click(function(event)
+            {
+                event.preventDefault();
+                event.stopPropagation();
+                $('#ren-modal').modal('show');
+                console.log($(this).closest('.thumbnail').find('span.filename').html());
+                $('#ren-modal input#name').val($(this).closest('.thumbnail').find('span.filename').html());
+                {% if dir_path %}                    
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?url={{ url_for('.icon_index', path=dir_path) }}&path={{ dir_path }}/" + $(this).closest('.thumbnail').find('span.filename').html());
+                {% else %}
+                    $('#ren-modal form').attr('action', "{{ url_for('.rename') }}" + "?url={{ url_for('.icon_index') }}&path=" + $(this).closest('.thumbnail').find('span.filename').html());
+                {% endif %}
+                
+            });
+
+            $('li.actions.new').click(function () {
+                $('#dir-modal').modal('show');
+            });
+
+            $('.modal li.actions.cancel').click(function() {
+                $(this).closest('.modal').modal('hide');
+            });
+
+            $('.modal li.actions.validate').click(function() {
+                $(this).closest('.modal').modal('hide');
+                $(this).closest('.modal').find('form').submit();
+            });
+        })(jQuery);
+    </script>
+{% endblock %}
+
+        

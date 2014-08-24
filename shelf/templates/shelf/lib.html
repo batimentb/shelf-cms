@@ -1,3 +1,11 @@
+{% macro get_view_extensions(block) %}
+  {% if views_extensions %}
+      {% for template in views_extensions[block] %}
+          {% include template %}
+      {% endfor %}
+  {% endif %}
+{% endmacro %}
+
 {# ---------------------- Popup -------------------------- #}
 {% macro popup(id, header, body, footer) -%}
     <div class="modal fade" id="{{ id }}">
@@ -113,15 +121,22 @@
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, kwargs={}) %}
   {% set direct_error = h.is_field_error(field.errors) %}
-  <div class="form-group{{ ' error' if direct_error else '' }} col-xs-6">
-      <label for="{{ field.id }}">{{ field.label.text }}
+  <div class="form-group{{ ' error' if direct_error else '' }} col-xs-12">
+      <label class="col-xs-2" for="{{ field.id }}">{{ field.label.text }}
           {% if h.is_required_form_field(field) %}
             <strong style="color: red">&#42;</strong>
           {%- else -%}
             &nbsp;
           {%- endif %}
       </label>
-      {{ field(class_="form-control", **kwargs)|safe }}
+      <div class="col-xs-8">
+        {% if "class_" in kwargs %}
+            {% set classes = "%s %s" % ("form-control", kwargs['class_']) %}         
+            {{ field(class_=classes, **kwargs)|safe }}
+        {% else %}
+            {{ field(class_="form-control", **kwargs)|safe }}
+        {% endif %}
+      </div>
   </div>
 {% endmacro %}
 
@@ -162,7 +177,7 @@
 {% endmacro %}
 
 {% macro form_tag(form=None) %}
-    <form action="" method="POST" class="model-form" enctype="multipart/form-data">
+    <form action="" method="POST" class="model-form form-horizontal" enctype="multipart/form-data">
       <fieldset>
         {{ caller() }}
       </fieldset>

@@ -18,7 +18,7 @@ class UserPanelMixin:
         return dict(current_user=current_user)
 
 
-class UserModelView(UserPanelMixin, LoginMixin, SQLAModelView):
+class UserModelView(LoginMixin, SQLAModelView):
     default_forbidden_columns = ("password", "confirmed_at")
     can_edit = True
     can_create = False
@@ -26,7 +26,7 @@ class UserModelView(UserPanelMixin, LoginMixin, SQLAModelView):
 
     def __init__(self, *args, **kwargs):
         self.forbidden_columns = self.default_forbidden_columns
-        super(SQLAModelView, self).__init__(*args, **kwargs)
+        super(UserModelView, self).__init__(*args, **kwargs)
 
     def edit_form(self, obj):
         form = super(SQLAModelView, self).edit_form(obj)
