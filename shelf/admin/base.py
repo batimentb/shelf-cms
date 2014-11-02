@@ -27,3 +27,7 @@ class Admin(flask_admin.Admin):
         self.sortable_columns = []
 
         super(Admin, self).__init__(*args, **kwargs)
+
+
+    def add_widget(self, *args, **kwargs):
+        self.index_view.add_widget(*args, **kwargs)

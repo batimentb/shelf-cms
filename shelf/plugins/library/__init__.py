@@ -11,6 +11,9 @@ from werkzeug import secure_filename
 from base64 import b64decode
 from wtforms.fields import TextField
 from flask.ext.admin.form import RenderTemplateWidget
+from shelf.security.mixin import LoginMixin
+
+_unset_value = object()
 
 
 class RemoteFileModelMixin:
@@ -115,11 +118,15 @@ class RemoteFileField(TextField):
         if valuelist:
             self.data = valuelist[0]
 
+    def process_data(self, value):
+        TextField.process_data(self, value)
+
     def populate_obj(self, obj, name):
         if getattr(obj, name) is None:
             newfile = getattr(obj.__class__, name).mapper.class_()
             setattr(obj, name, newfile)
-        getattr(obj, name).set_path(self.data)
+            if self.raw_data and len(self.raw_data):
+                getattr(obj, name).set_path(self.raw_data[0])
 
 
 class PictureWidget(RenderTemplateWidget):
@@ -141,16 +148,15 @@ class PictureField(TextField):
         if getattr(obj, name) is None:
             newfile = getattr(obj.__class__, name).mapper.class_()
             setattr(obj, name, newfile)
-        getattr(obj, name).set_path(self.data['path'])
+            if self.raw_data and len(self.raw_data):
+                getattr(obj, name).set_path(self.raw_data[0])
 
     def process_formdata(self, valuelist):
-        if valuelist and valuelist[0] is not None:
-            self.data = {"path": valuelist[0]}
-        else:
-            self.data = {"path": None}
+        if self.data:
+            self.data.set_path(valuelist[0])
 
 
-class FileAdmin(fileadmin.FileAdmin):
+class FileAdmin(LoginMixin, fileadmin.FileAdmin):
     list_template = "shelf-library-list.html"
     icon_list_template = "shelf-library-icon-list.html"
     upload_template = "shelf-library-upload.html"

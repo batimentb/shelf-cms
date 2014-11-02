@@ -122,19 +122,27 @@
 {% macro render_field(form, field, kwargs={}) %}
   {% set direct_error = h.is_field_error(field.errors) %}
   <div class="form-group{{ ' error' if direct_error else '' }} col-xs-12">
-      <label class="col-xs-2" for="{{ field.id }}">{{ field.label.text }}
+      {% if "ignore_label" not in kwargs %}
+      <label class="col-xs-2" for="{{ field.id }}">{{ field.label.text.upper() }}
           {% if h.is_required_form_field(field) %}
             <strong style="color: red">&#42;</strong>
           {%- else -%}
             &nbsp;
           {%- endif %}
       </label>
+      {% endif %}
       <div class="col-xs-8">
         {% if "class_" in kwargs %}
             {% set classes = "%s %s" % ("form-control", kwargs['class_']) %}         
-            {{ field(class_=classes, **kwargs)|safe }}
+            {{ field(class_=classes)|safe }}
         {% else %}
-            {{ field(class_="form-control", **kwargs)|safe }}
+           {% if field.type == "QuerySelectField" or field.type == "Select2Field" %}
+            {{ field(style="width: 100%", **kwargs)|safe }}
+           {% elif field.type == "BooleanField" %}
+            {{ field(class_="js-switch", **kwargs)|safe }}
+           {% else %}
+             {{ field(class_="form-control", **kwargs)|safe }}
+           {% endif %}
         {% endif %}
       </div>
   </div>

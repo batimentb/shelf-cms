@@ -2,20 +2,20 @@
 		
 	{% if field.data and field.data.get_path() %}
 		{% set url = field.data.get_path() %}
-		<input type="hidden" class="picture" name="{{ field.name }}" value="{{ url }}">
+		<input type="hidden" class="picture" id="{{ field.id }}" name="{{ field.name }}" value="{{ url }}">
 		<div class="thumbnail">
-			<img src="{{ url }}" alt="{{ field.id }}"></img>
+			<img src="{{ url }}" alt="{{ field.id }}" style="max-height: 420px"></img>
 		</div>
 	{% else %}
-		<input type="hidden" class="picture" name="{{ field.name }}" value="">
+		<input type="hidden" class="picture" id="{{ field.id }}" name="{{ field.name }}" value="">
 		<div class="thumbnail">
-			<img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="{{ field.id }}"></img>
+			<img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="{{ field.id }}"  style="max-height: 420px"></img>
 		</div>
 	{% endif %}
 	</div>
 	<div class="col-xs-2">
-	  <button class="btn btn-default modal-open" type="button">EDIT</button>
-	  <button class="btn btn-default remove" type="button">REMOVE</button>
+	  <button class="btn btn-default modal-open side-btn" type="button">EDIT</button>
+	  <button class="btn btn-default remove side-btn" type="button">REMOVE</button>
 	</div>
 	<div class="modal fade">
 		<div class="modal-dialog">

@@ -1,0 +1,45 @@
+<script language="javascript">
+	(function($) {
+		$(".inline-field-list").each(function (idx, elem) {
+				$(elem).find(".inline-field > div > select").each(function (idx, elem) {
+					$(elem).val(idx+1);
+					$(elem).change(function (event) {
+						var newval = parseInt(event.val);
+						var oldval = parseInt(event.removed.text);
+						var newelem = $(event.target);
+						console.log("YEAAAH")
+						newelem.closest(".inline-field-list").find(".inline-field > div > select").each(function (idx, elem) {
+							console.log($(elem).val(), newval)
+							var curval = parseInt($(elem).val());
+							if ($(elem).attr("id") == newelem.attr("id"))
+							{
+								return;								
+							}
+							else if (oldval > newval && curval < oldval && curval >= newval)
+							{
+								$(elem).select2("val", curval+1);
+							}
+							else if (oldval < newval && curval > oldval && curval <= newval)
+							{
+								$(elem).select2("val", curval-1);
+							}
+						});
+						var local = newelem.closest(".inline-field");
+						var global = local.closest(".inline-field-list");
+						var place;
+						if (oldval < newval)
+						{
+							place = global.find(".inline-field")[newval-1];	
+							local.detach().insertAfter(place);						
+						}
+						else
+						{
+							place = global.find(".inline-field")[newval-1];
+							local.detach().insertBefore(place);
+						}
+					});
+				});
+		});
+		
+	})(jQuery);
+</script>

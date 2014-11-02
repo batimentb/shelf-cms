@@ -6,10 +6,23 @@ from flask.ext.admin.form.fields import Select2Field
 
 _unset_value = object()
 
+class OrderViewMixin:
+    pass
 
 config = {
     "name": "Order",
-    "description": "Manage order of your models",    
+    "description": "Manage order of your models",
+    "admin": {
+        "view_subclass": OrderViewMixin,
+        "template": {
+            "modelview.edit_view": {
+                "tail_js":"ordering-inline-tail.html"
+            },
+            "modelview.create_view": {
+                "tail_js": "ordering-inline-tail.html"
+            }
+        }
+    } 
 }
 '''"extend": {
     "admin": {
@@ -115,7 +128,7 @@ class OrderingInlineFieldList(InlineModelFormList):
 
         self.object_data = data
 
-        if formdata:
+        if formdata:  
             indices = sorted(set(self._extract_indices(self.name, formdata)))
             if self.max_entries:
                 indices = indices[:self.max_entries]
@@ -128,6 +141,8 @@ class OrderingInlineFieldList(InlineModelFormList):
                 except StopIteration:
                     obj_data = _unset_value
                 self._add_entry(formdata, obj_data, index=index)
+                key = 'del-%s-%d' % (self.id, index)
+                self.entries[index]._should_delete = key in formdata
         else:
             self.size_list = len(data)
             for obj_data in data:
@@ -135,3 +150,5 @@ class OrderingInlineFieldList(InlineModelFormList):
 
         while len(self.entries) < self.min_entries:
             self._add_entry(formdata)
+
+            

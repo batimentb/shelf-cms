@@ -46,14 +46,20 @@
 {% endmacro %}
 
 {% macro header() %}
+    {% if actions %}
     <p class="select-all" style="font-size: 14px">
         <span>0</span> sur {{ data|length }} sélectionnés &#160;
+        {% if num_pages > 1 %}
         <a style="display: none;" href="javascript:void(0)">Sélectionner tous les {{ count }} éléments</a>
+        {% endif %}
     </p>
+    {% if num_pages > 1 %}
     <p class="select-none" style="display: none; font-size: 14px">
         Tous les {{ count }} sélectionnés &#160;
         <a href="javascript:void(0)">Effacer la sélection</a>
     </p>
+    {% endif %}
+    {% endif %}
 {% endmacro %}
 
 {% macro script(message, actions, actions_confirmation) %}

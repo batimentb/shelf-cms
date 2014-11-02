@@ -7,29 +7,38 @@
     <div class="inline-field-list container">
 
         {% for subfield in field %}
-        <div id="{{ subfield.id }}" class="inline-field row" style="margin: 0; padding-top: 20px">
+        <div id="{{ subfield.id }}" class="inline-field row" style="margin: 0; margin-right: 15px; padding-top: 30px; padding-bottom: 30px">
             <div class="col-xs-2">
-                <label>{{ subfield.id }}</label>
+                <label>{{ subfield.label.text.upper() }}</label>
             </div>
             <div class="col-xs-2">
                 {{ subfield.position_field }}
             </div>
-            {% if subfield.inline_thumbnail %}
-            <div class="col-xs-2">
-                <div class="thumbnail">
-                    <img src="{{ subfield.inline_thumbnail }}">
+            {% if subfield.inline_thumbnail and subfield.inline_title %}
+                <div class="col-xs-2">
+                    <div class="thumbnail" style="margin-bottom: 0">
+                        <img src="{{ subfield.inline_thumbnail }}">
+                    </div>
                 </div>
-            </div>
+                <div class="col-xs-2">
+                    <h4 class="media-heading">{{ subfield.inline_title }}</h4>
+                </div>
+            {% elif subfield.inline_thumbnail %}
+                <div class="col-xs-4">
+                    <div class="thumbnail" style="margin-bottom: 0">
+                        <img src="{{ subfield.inline_thumbnail }}">
+                    </div>
+                </div>
+            {% elif subfield.inline_title %}
+                <div class="col-xs-4">
+                    <h4 class="media-heading">{{ subfield.inline_title }}</h4>
+                </div>
             {% endif %}
-            {% if subfield.inline_title %}
-            <div class="col-xs-2">
-                <h4 class="media-heading">{{ subfield.inline_title }}</h4>
-            </div>
-            {% endif %}
+            
             {%- if not check or check(subfield) %}
                 {% if subfield.get_pk and subfield.get_pk() %}
                 <div class="inline-field-control col-xs-2"  style="padding: 0px; float: left">
-                    <input type="checkbox" name="del-{{ subfield.id }}" id="del-{{ subfield.id }}" />
+                    <input type="checkbox" name="del-{{ subfield.id }}" class="js-switch" id="del-{{ subfield.id }}" />
                     <label for="del-{{ subfield.id }}" style="padding: 0px; display: inline">{{ _gettext('Delete?') }}</label>
                 </div>
                 {% else %}
@@ -39,7 +48,7 @@
                 {% endif %}
             {%- endif -%}
             <div class="col-xs-2">
-                <button type="button" class="btn btn-default" class="accordion-toggle" data-toggle="collapse"  href="#{{ subfield.id }}-panel" data-parent="#{{ id }}-accordion">DETAILS</button>
+                <button type="button" class="btn btn-default accordion-toggle side-btn" data-toggle="collapse"  href="#{{ subfield.id }}-panel" data-parent="#{{ id }}-accordion">EDIT</button>
             </div>
             <div class="accordion col-xs-12" id="{{ subfield.id }}-accordion" style="border: 0px; margin-top: 10px; padding: 0">
                 <div class="accordion-group">
@@ -64,6 +73,7 @@
         </div>
         {% endfilter %}
     </div>
+
     <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
 </div>
 {% endmacro %}

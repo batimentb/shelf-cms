@@ -15,7 +15,7 @@
         {% if url and url != "None" %}
         <img src="{{ url }}" alt="{{ slide.get_title() }}">
         {% else %}
-        <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="">
+        <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="" >
         {% endif %}
         <div class="carousel-caption">
           {{ slide.get_title() }}
@@ -34,16 +34,16 @@
   </div>
 </div>
 <div class="col-xs-2">
-  <a href="{{ url_for('%s.edit_view' % field.slider_view_endpoint, url=request.url, id=field.data.id) }}" type="button" class="btn btn-default">EDIT</a>
+  <a href="{{ url_for('%s.edit_view' % field.slider_view_endpoint, url=request.url, id=field.data.id) }}" type="button" class="btn btn-default side-btn">EDIT</a>
   {% elif field.data %}
   <div class="thumbnail">
-    <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="...">
+    <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}"  style="max-height: 420px" alt="...">
   </div>
 </div>
 <div class="col-xs-2">
-  <a href="{{ url_for('%s.edit_view' % field.slider_view_endpoint, url=request.url, id=field.data.id) }}" type="button" class="btn btn-default">EDIT</a>
+  <a href="{{ url_for('%s.edit_view' % field.slider_view_endpoint, url=request.url, id=field.data.id) }}" type="button" class="btn btn-default side-btn">EDIT</a>
   {% else %}
   <div class="thumbnail">
-    <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="...">
+    <img  style="max-height: 420px" src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="...">
   </div>
 {% endif %}

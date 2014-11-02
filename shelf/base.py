@@ -21,9 +21,10 @@ class Shelf:
                             template_folder="templates",
                             static_folder="static")
         app.register_blueprint(self.bp)
-        app.shelf = self
+        app.shelf = self 
 
-        adm = admin.Admin(app)
+    def init_admin(self, *args, **kwargs):
+        adm = admin.Admin(self.app, *args, **kwargs)
         self.admin = adm
 
     def init_db(self, db):

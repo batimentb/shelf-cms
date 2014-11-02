@@ -18,21 +18,39 @@
 {% block head %}
     {{ super() }}
     <link href="{{ admin_static.url(filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('shelf.static', filename='select2/select2-flat.css') }}" rel="stylesheet">
+    <link href="{{ url_for('shelf.static', filename='switchery/switchery.min.css') }}" rel="stylesheet">
     <link href="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-    <div class="row create">
-        <div class="col-xs-12 title">
+    <div class="row create col-xs-12">
+        <div class="title">
             {% block model_create_title %}
                 <h1>{{ admin_view.name.upper() }}</h1>
             {% endblock %}
         </div>
-        <div class="col-xs-12 content">
+        <div class="content">
           {% call lib.form_tag(form) %}
               {{ lib.render_form_fields(form, form_opts=form_opts, extra=edit_extra_fld()) }}
           {% endcall %}
         </div>
+    </div>
+    {#<div class="col-lg-2 hidden-xs hidden-sm hidden-md" style="margin-top: 49px; margin-left: 15px">
+        <ul class="list-group">
+            {% if form_opts and form_opts.form_rules %}
+                {% for r in form_opts.form_rules %}
+                    {{ r(form, form_opts=form_opts) }}
+                {% endfor %}
+            {% else %}
+                {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
+                  <li class="list-group-item" style="padding-top: 5px; padding-bottom: 5px">
+                    <a href="#{{f.id }}">{{ f.label }}</a>
+                  </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>#}
 {% endblock %}
 
 {% block page_body %}
@@ -45,6 +63,7 @@
 {% block tail_js %}
     {{ super() }}
     <script src="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='switchery/switchery.min.js') }}"></script>
     <script src="{{ shelf_static.url(filename='shelf/js/form.js') }}"></script>
     <script language="javascript">
         (function($) {
@@ -59,6 +78,12 @@
                 );
                 $("form.model-form").submit();
                 e.stopPropagation();
+            });
+
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+
+            elems.forEach(function(html) {
+              var switchery = new Switchery(html, { color: '#a9a3d9', secondaryColor: '#e0e0e0' });
             });
         })(jQuery);
     </script>

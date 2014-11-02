@@ -10,7 +10,7 @@
 						selector: "#" + $(event.target).attr('id') + " .wysiwyg-classic",
 			            menubar: false,
 			            toolbar: "bold italic | bullist numlist blockquote | paste link nonbreaking | code",
-			            plugins: "paste,link,code,nonbreaking",
+			            plugins: "paste,link,code,nonbreaking,autoresize",
 			            paste_as_text: true,
 			            statusbar: false
 					});
@@ -31,9 +31,9 @@
 			selector: ".wysiwyg-classic",
             menubar: false,
             toolbar: "bold italic | bullist numlist blockquote | paste link nonbreaking | code",
-            plugins: "paste,link,code,nonbreaking",
+            plugins: "paste,link,code,nonbreaking,autoresize",
             paste_as_text: true,
-            statusbar: false
+            statusbar: false,
 		});
 		tinymce.init({
 			selector: ".wysiwyg-full",

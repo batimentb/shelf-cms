@@ -125,14 +125,15 @@ class LocalizedField(FieldList):
         if model:
             if not isinstance(model, LocalizedModelMixin):
                 raise ValueError
+            for i in range(len(self.langs)):
+                model.set_lang(self.langs[i], self.data[i])
         else:
             model = getattr(obj.__class__, name).mapper.class_(
-                    value=self.data[0],
                     lang=self.langs[0]
             )
-        for i in range(len(self.langs)):
-            model.set_lang(self.langs[i], self.data[i])
-        setattr(obj, name, model) 
+            for i in range(len(self.langs)):
+                model.set_lang(self.langs[i], self.data[i])
+            setattr(obj, name, model) 
 
     def _extract_indices(self, prefix, formdata):
         """
@@ -172,6 +173,20 @@ class LocalizedField(FieldList):
                 len(self.langs), 
                 default, 
                 **kwargs)
+
+
+class InternationalField(LocalizedField):
+    def __init__(self, unbound_field, label=None, validators=None, min_entries=0,
+                 max_entries=None, default=tuple(), **kwargs):
+        self.langs = current_app.config.get("SHELF_I18N_COUNTRIES", ("en", "fr"))
+        if "allow_blank" in kwargs:
+            del kwargs["allow_blank"]
+        FieldList.__init__(self, unbound_field, label, validators, 
+                len(self.langs), 
+                len(self.langs), 
+                default, 
+                **kwargs)
+
 
 class Localized:
     def __init__(self):

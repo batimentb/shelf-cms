@@ -11,7 +11,7 @@
 
 
         <div class="modal-body"  style="padding: 0px; overflow: hidden">
-            <table class="table table-hover model-list">
+            <table class="table table-hover model-list modal-img">
                 {% for name, path, is_dir, size in items %}
                 <tr {% if not is_dir %}class="file"{% endif %}>
                     {% if is_dir %}

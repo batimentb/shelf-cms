@@ -1,0 +1,80 @@
+{% extends 'admin/master.html' %}
+
+{% block head_css %}
+{{ super() }}
+<style>
+        .widget { z-index: 0; }
+        .widget:hover { z-index: 10; }
+</style>
+<link href="{{ url_for('dashboard.static', filename='dashboard.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('dashboard.static', filename='morris.css') }}">
+{% endblock %}
+
+{% block body %}
+        {% for w in widgets %}
+                {{ w|safe }}
+        {% endfor %}
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('dashboard.static', filename='masonry.min.js') }}"></script>
+<script type="text/javascript"  src="{{ url_for('dashboard.static',
+        filename='raphael-min.js') }}"></script>
+<script src="{{ url_for('dashboard.static', filename='morris.min.js') }}"></script>
+
+<script language="javascript">
+    (function($) {
+       $('#wrap > .container').masonry({
+                        itemSelector : '.widget',
+                        gutter: 12,
+                        transitionDuration: 0,
+                        columnWidth: 116
+                });
+
+      $('.donut').each(function (idx, elem) {
+                var colors = $(elem).children('div.graph').attr('data-color');
+                var labelColor = $(elem).children('div.graph').attr('data-label-color');
+
+                if (colors && labelColor)
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: JSON.parse($(elem).children('div.graph').attr('data-graph')),
+                                  colors: JSON.parse(colors),
+                                  labelColor: labelColor,
+                                  formatter: function (y, data) { return data.percent + '%' }
+                                });
+                }
+                else if (colors)
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: JSON.parse($(elem).children('div.graph').attr('data-graph')),
+                                  colors: JSON.parse(colors),
+                                  formatter: function (y, data) { return data.percent + '%' }
+                                });
+                }
+                else if (labelColor)
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: JSON.parse($(elem).children('div.graph').attr('data-graph')),
+                                  labelColor: labelColor,
+                                  formatter: function (y, data) { return data.percent + '%' }
+                });
+                }
+                else
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: JSON.parse($(elem).children('div.graph').attr('data-graph')),
+                                  formatter: function (y, data) { return data.percent + '%' }
+                                });
+                }
+
+             });
+    })(jQuery);
+</script>
+
+{% endblock %}

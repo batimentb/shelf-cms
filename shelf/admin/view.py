@@ -9,8 +9,9 @@ from flask.ext.admin.contrib.sqla import tools
 from sqlalchemy import or_
 from field import ShelfInlineFieldList
 from form import ModelConverter, InlineModelConverter
+from shelf.security.mixin import LoginMixin
 
-class IndexView(AdminIndexView):
+class IndexView(LoginMixin, AdminIndexView):
     def __init__(self, name=None, category=None,
                  endpoint=None, url=None,
                  template='admin/index.html'):
@@ -21,7 +22,7 @@ class IndexView(AdminIndexView):
                                         'static')
         self._template = template
 
-class SQLAModelView(sqla.ModelView, ActionsMixin):
+class SQLAModelView(LoginMixin, sqla.ModelView, ActionsMixin):
     list_template = "shelf/model/list.html"
     create_template = "shelf/model/create.html"
     edit_template = "shelf/model/edit.html"
@@ -57,7 +58,7 @@ class SQLAModelView(sqla.ModelView, ActionsMixin):
             for mixin in self.sort_overrides:                
                 if issubclass(sort_field.mapper.class_, mixin):
                     return self.sort_overrides[mixin](query, joins, sort_field, sort_desc)
-        query, joins = SQLAModelView._order_by(self, query, joins, sort_field, sort_desc)
+        query, joins = sqla.ModelView._order_by(self, query, joins, sort_field, sort_desc)
         return query, joins
 
     def extend_view(self, endpoint, block, template):
@@ -86,7 +87,7 @@ class SQLAModelView(sqla.ModelView, ActionsMixin):
                         extensions[block] = []
                     for template in view_extensions[block]:
                         extensions[block].append(template)
-
+        
         return {
             "views_extensions": extensions
         }

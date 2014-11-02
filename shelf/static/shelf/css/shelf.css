@@ -40,6 +40,7 @@ body {
   padding-left: 50px; 
   padding-right: 30px; 
   background-color: #ff4262;
+  height: 55px;
 }
 
 .navbar-fixed-top .navbar-brand:hover, 
@@ -333,35 +334,53 @@ ul.nav > li.disabled > a
 
 .model-form > fieldset > .form-group
 {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 50px;
+  padding-bottom: 50px;
   margin-right: 0px;
   margin-left: 0px;
+  margin-bottom: 0px;
 }
 
-.model-form > fieldset > .form-group .inline-field
-{
-  background-color: #f9f9f9;
-}
-
-.model-form > fieldset > .form-group .inline-field:nth-child(even)
+.model-form > fieldset > .form-group:nth-child(odd)
 {
   background-color: white;
+  border-bottom: 1px solid #ededed;
 }
 
 .model-form > fieldset > .form-group:nth-child(even)
 {
-  background-color: #f9f9f9;
+  background-color: #fafafa;
+  border-bottom: 1px solid #ededed;
 }
 
-.model-form > fieldset > .form-group:nth-child(even) .inline-field
+.model-form > fieldset > .form-group .inline-field .inline-form-field
+{
+  border-top: 1px dashed #ededed;
+  padding-top: 15px;
+}
+
+.model-form > fieldset > .form-group:nth-child(odd) .inline-field:nth-child(odd)
 {
   background-color: white;
+  border-bottom: 1px solid #ededed;
+}
+
+.model-form > fieldset > .form-group:nth-child(even) .inline-field:nth-child(odd)
+{
+  background-color: #fafafa;
+  border-bottom: 1px solid #ededed;
+}
+
+.model-form > fieldset > .form-group:nth-child(odd) .inline-field:nth-child(even)
+{
+  background-color: #fafafa;
+  border-bottom: 1px solid #ededed;
 }
 
 .model-form > fieldset > .form-group:nth-child(even) .inline-field:nth-child(even)
 {
-  background-color: #f9f9f9;
+  background-color: white;
+  border-bottom: 1px solid #ededed;
 }
 
 /* Progress */
@@ -463,15 +482,6 @@ form.icon button {
   background: transparent;
 }
 
-form.icon {
-  display: inline-block;
-  padding-left: 5px;
-}
-
-a.icon {
-  display: inline-block;
-}
-
 .navbar-header .icon-bar {
     background-color: white !important;
 }
@@ -526,9 +536,31 @@ h1
   color: #232323;
 }
 
-.model-list .list-checkbox-column,
+.model-list thead tr th:first-child,
 .model-list tbody tr td:first-child {
     padding-left: 25px !important;
+}
+
+.model-list:not(.modal-img) tbody tr td:first-child {
+    text-align: left;
+}
+
+.model-list:not(.modal-img) tbody tr td:last-child {
+    text-align: right;
+  }
+
+.model-list:not(.modal-img) tbody tr td:last-child > a  {
+    margin: -10px 0 -10px 0;
+    padding: 8px 20px 8px 20px;
+    border-left: 1px solid #ebebeb;
+    float: right;
+}
+
+.model-list:not(.modal-img) tbody tr td:last-child > form {
+    margin: -10px 0 -10px 0;
+    padding: 8px 20px 8px 20px;
+    border-left: 1px solid #ebebeb;
+    float: right;
 }
 
 .model-list tbody tr:hover
@@ -632,6 +664,7 @@ label
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
   font-size: 14px;
+  color: #323232;
 }
 
 input
@@ -829,3 +862,69 @@ ul.nav > li.actions.draft > a {
     padding-left: 10px;
     padding-right: 10px;
 }
+
+.side-btn {
+    color: white;
+    background-color: #a9a3d9;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    border: 0px none;
+    margin-bottom: 5px;
+}
+
+.side-btn:hover {
+    color: white;
+    background-color: #928bcb;
+    border: 0px none;
+}
+
+.select2-offscreen {
+  width: 100% !important;
+}
+
+.switchery {
+  border-radius: 20px !important;
+}
+
+.switchery > small {
+  border-radius: 100% !important;
+}
+
+h4.media-heading {
+  color: #4c4c4c !important;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.inline-field-control label {
+  color: #4c4c4c !important;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.mce-toolbar-grp {
+  background-image: none !important;
+}
+
+.mce-btn {
+  background-image: none !important;
+}
+
+.mce-tinymce {
+  border: 1px solid #ccc !important;
+}
+
+.mce-edit-area {
+  border-top: 1px solid #ccc !important;
+}
+
+.modal-content > .modal-dialog {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+
+
+
+

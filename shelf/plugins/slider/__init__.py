@@ -3,7 +3,10 @@ from os.path import basename
 from wtforms.fields import TextField
 from flask.ext.admin.form import RenderTemplateWidget
 from shelf.admin.view import SQLAModelView
-from wtforms.utils import unset_value
+try:
+    from wtforms.utils import unset_value
+except:
+    unset_value = object()
 
 config = {
     "name": "Slider"
@@ -14,7 +17,10 @@ class SlideModelMixin:
         return self.picture
 
     def get_title(self):
-        return basename(self.get_picture().get_path())
+        try:
+            return basename(self.get_picture().get_path())
+        except:
+            return ""
 
 class SliderModelMixin:
     def get_slides(self):
