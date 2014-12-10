@@ -63,9 +63,11 @@
     </div>
   </div>
 
+  {% block superbody %}
   <div class="container">
     {% block body %}{% endblock %}
   </div>
+  {% endblock %}
 
   {% block messages %}
     {{ layout.messages() }}

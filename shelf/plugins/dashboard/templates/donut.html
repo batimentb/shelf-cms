@@ -12,7 +12,7 @@
         </div>
         <div class="graph" data-graph='{{ points|tojson }}'
                 {% if style.label_color %}data-label-color="{{ style.label_color }}"{% endif %}
-                {% if style.bar_colors %}data-color="{{ style.bar_colors|tojson }}"{% endif %}
-        style="position:absolute; top: 60px; left: 20px; right: 20px; bottom: 0px">
+                {% if style.donut_colors %}data-color='{{ style.donut_colors|tojson }}'{% endif %}
+        style="position:absolute; top: 45px; left: 40px; right: 40px; bottom: 30px">
     </div>
 </div>

@@ -332,6 +332,11 @@ ul.nav > li.disabled > a
   font-size: 1.2em !important;
 }
 
+.model-form > fieldset
+{
+  display: table-column;
+}
+
 .model-form > fieldset > .form-group
 {
   padding-top: 50px;

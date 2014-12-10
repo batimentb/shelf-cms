@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ShelfCMS',
-    version='0.8.14',
+    version='0.8.16',
     url='https://github.com/iriahi/shelf-cms',
     license='BSD',
     author='Ismael Riahi',

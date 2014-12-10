@@ -3,6 +3,7 @@ from flask import render_template, url_for
 from operator import itemgetter
 import math
 
+
 class DashboardWidget:
     shouldUpdate = False
     template = None
@@ -23,6 +24,7 @@ class DashboardWidget:
             raise NotImplementedError
         else:
             return render_template(self.template)
+
 
 class BaseWidget:
     template = None
@@ -66,6 +68,7 @@ class BaseWidget:
                                 style=self.style,
                                 **self.provider.compute())
 
+
 class TextWidget(BaseWidget):
     template = "simple-text.html"
 
@@ -80,14 +83,28 @@ class TextWidget(BaseWidget):
         if "data_color" in kwargs:
             self.style["data_color"] = kwargs["data_color"]
 
+
+class PictureWidget(TextWidget):
+    template = "picture-text.html"
+
+
+class EvolutionWidget(TextWidget):
+    template = "evolution.html"
+
+
 class DonutWidget(TextWidget):
     template = "donut.html"
 
     def __init__(self, *args, **kwargs):
         TextWidget.__init__(self, *args, **kwargs)
         self.style["rows"] = kwargs["rows"] if "rows" in kwargs else 2
-        self.style["donut_colors"] = kwargs["donut_colors"] if "donut_colors" in kwargs else ['#224397', '#4d639c', '#7b8dbb', '#b9c2db', '#dde0e9']
+        grays = [
+            '#696969', '#787878', '#828282', '#919191', '#A1A1A1', '#ABABAB',
+            '#B8B8B8', '#C2C2C2', '#CFCFCF', '#D9D9D9', '#E5E5E5', '#F5F5F5'
+        ]
+        self.style["donut_colors"] = kwargs["donut_colors"] if "donut_colors" in kwargs else ['#ff9d98',] + grays
         self.style["label_color"] = kwargs["label_color"] if "label_color" in kwargs else "#4c4c4c"
+
 
 class BarWidget(TextWidget):
     template = "bar.html"
@@ -95,5 +112,5 @@ class BarWidget(TextWidget):
     def __init__(self, *args, **kwargs):
         TextWidget.__init__(self, *args, **kwargs)
         self.style["rows"] = kwargs["rows"] if "rows" in kwargs else 2
-        self.style["bar_colors"] = kwargs["bar_colors"] if "donut_colors" in kwargs else ['#224397', '#4d639c', '#7b8dbb', '#b9c2db', '#dde0e9']
+        self.style["bar_colors"] = kwargs["bar_colors"] if "bar_colors" in kwargs else ['#ff9d98', '#a7a7a7', '#bebebe', '#dddddd', '#f8f8f8']
 

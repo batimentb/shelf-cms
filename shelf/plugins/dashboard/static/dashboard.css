@@ -1,3 +1,16 @@
+#wrap > .contain {
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 50px 0;
+}
+
+.progress {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
 .widget {
 	padding: 18px;
 	font-family: 'Open Sans', sans-serif;
@@ -6,6 +19,14 @@
 
 .widget .title {
 	font-size: 12px;
+}
+
+.widget.picture .data {
+  font-size: 20px;
+}
+
+.widget.picture .legend {
+  font-size: 12px;
 }
 
 .widget.text .data {
