@@ -1,0 +1,92 @@
+{% import 'shelf/lib.html' as lib with context %}
+
+{% macro render_field(form, field, kwargs={}) %}
+    {% if "class_" in kwargs %}
+        {% set classes = "%s %s" % ("form-control", kwargs['class_']) %}         
+        {{ field(class_=classes)|safe }}
+    {% else %}
+       {% if field.type == "QuerySelectField" or field.type == "Select2Field" %}
+        {{ field(style="width: 100%", **kwargs)|safe }}
+       {% elif field.type == "BooleanField" %}
+        {{ field(class_="js-switch", **kwargs)|safe }}
+       {% else %}
+         {{ field(class_="form-control", **kwargs)|safe }}
+       {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_form_fields(form, form_opts=None, extra=None) %}
+    {% if form.hidden_tag is defined %}
+        {{ form.hidden_tag() }}
+    {% else %}
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+        {% for f in form if f.type == 'HiddenField' %}
+            {{ f }}
+        {% endfor %}
+    {% endif %}
+
+    {% if extra %}
+        {{ extra }}
+    {% endif %}
+
+    {% if form_opts and form_opts.form_rules %}
+        {% for r in form_opts.form_rules %}
+            {{ r(form, form_opts=form_opts) }}
+        {% endfor %}
+    {% else %}
+        {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
+        <div class="row">
+              {% if form_opts %}
+                {% set kwargs = form_opts.widget_args.get(f.name, {}) %}
+              {% else %}
+                {% set kwargs = {} %}
+              {% endif %}
+              <label class="col-xs-2" for="{{ f.id }}">{{ f.label.text.upper() }}
+              </label>
+              <div class="col-xs-10">
+              {{ render_field(form, f) }}
+              </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% if field[0].form %}
+{{ render_form_fields(field[0].form) }}
+{% else %}
+{{ render_field(form, field[0]) }}
+{% endif %}
+</div>
+<div class="col-xs-2">
+	<button type="button" class="btn btn-default accordion-toggle side-btn" 
+    data-toggle="collapse"  href="#{{ field.id }}-panel">TRANSLATE</button>
+</div>
+<div class="accordion col-xs-12" id="{{ field.id }}-accordion" style="border: 0px; margin-top: 10px; padding: 0">
+	<div class="accordion-group">
+		<div id="{{ field.id }}-panel" class="accordion-body collapse" style="border: 0px">
+	    	<div class="accordion-inner" style="border: 0px">
+                    {% for subfield in field[1:] %}
+                        {% set lang = field.langs[loop.index] %}
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <p>{{ lang.upper() }}</p>
+                            </div>
+                            <div class="col-xs-8">
+                                {% if subfield.form %}
+                                {{ render_form_fields(subfield.form) }}
+                                {% else %}
+                                {{ render_field(form, subfield) }}
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-2">
+                                <button type="button" class="btn btn-default side-btn">
+                                    USE {{ field.langs[0].upper() }}
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+	      	</div>
+    	</div>    	
+	</div>

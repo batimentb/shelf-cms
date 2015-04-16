@@ -1,0 +1,16 @@
+{% macro messages() %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, m in messages %}
+        {% if category %}
+        <div class="alert alert-{{ category }}">
+        {% else %}
+        <div class="alert">
+        {% endif %}
+          <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endmacro %}

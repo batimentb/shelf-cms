@@ -1,0 +1,35 @@
+{% if field.data and field.data.get_path() and field.data.get_path() != "None" %}
+	{% set url = field.data.get_path() %}	
+	<input class="form-control remote-file" type="text" id="{{ field.id }}" name="{{ field.name }}" value="{{ url }}">
+{% else %}
+	<input class="form-control remote-file" type="text" id="{{ field.id }}" name="{{ field.name }}" value="">
+{% endif %}
+</div>
+
+<div class="col-xs-2">
+  <button class="btn btn-default modal-open side-btn" type="button">EDIT</button>
+  <button class="btn btn-default remove side-btn" type="button">REMOVE</button>
+</div>
+<div class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+				<h3>Select file</h3>
+			</div>
+			<div class="modal-body">
+			</div>
+		</div>
+	</div>
+
+
+{#<div class="remote-file widget">
+	<div class="input-group">
+		
+		<span class="input-group-btn">
+        	<button class="btn btn-default modal-open" type="button">Select file</button>
+      	</span>
+	</div>
+	<!-- Modal -->
+	
+</div>#}

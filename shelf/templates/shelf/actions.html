@@ -1,0 +1,72 @@
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'shelf/static.html' as shelf_static with context %}
+
+{% macro dropdown(actions, btn_class='dropdown-toggle') -%}
+    <a class="{{ btn_class }}" data-toggle="dropdown" href="javascript:void(0)">{{ _gettext('With selected') }}<b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        {% for p in actions %}
+        <li>
+            <a href="javascript:void(0)" onclick="return modelActions.execute('{{ p[0] }}');">{{ _gettext(p[1]) }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% macro form(actions, url) %}
+    {% if actions %}
+    <form id="action_form" action="{{ url }}" method="POST" style="display: none">
+        {% if csrf_token %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+
+        {% if page is defined %}
+            <input type="hidden" name="page" value="{{ page }}"/>
+            <input type="hidden" name="select-all" id="select-all" value="0"/>
+        {% endif %}
+
+        {% if search %}
+            <input type="hidden" name="search" value="{{ search }}"/>
+        {% endif %}
+
+        {% if sort_column is not none %}
+            <input type="hidden" name="sort" value="{{ sort_column }}"></input>
+        {% endif %}
+        {% if sort_desc %}
+            <input type="hidden" name="desc" value="{{ sort_desc }}"></input>
+        {% endif %}
+
+        {% if active_filters %}
+             <input type="hidden" name="filters" value="{% for arg in request.args %}{{ arg }}={{ request.args.get(arg) }},{% endfor %}"></input>
+        {% endif %}
+
+        <input type="hidden" id="select-page" name="select-page" value="0" />
+        <input type="hidden" id="action" name="action" />
+    </form>
+    {% endif %}
+{% endmacro %}
+
+{% macro header() %}
+    {% if actions %}
+    <p class="select-all" style="font-size: 14px">
+        <span>0</span> sur {{ data|length }} sélectionnés &#160;
+        {% if num_pages > 1 %}
+        <a style="display: none;" href="javascript:void(0)">Sélectionner tous les {{ count }} éléments</a>
+        {% endif %}
+    </p>
+    {% if num_pages > 1 %}
+    <p class="select-none" style="display: none; font-size: 14px">
+        Tous les {{ count }} sélectionnés &#160;
+        <a href="javascript:void(0)">Effacer la sélection</a>
+    </p>
+    {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro script(message, actions, actions_confirmation) %}
+    {% if actions %}
+    <script src="{{ shelf_static.url(filename='shelf/js/actions.js') }}"></script>
+    <script language="javascript">
+        var modelActions = new AdminModelActions({{ message|tojson|safe }}, {{ actions_confirmation|tojson|safe }});
+    </script>
+    {% endif %}
+{% endmacro %}

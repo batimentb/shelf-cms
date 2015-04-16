@@ -1,0 +1,220 @@
+{% macro get_view_extensions(block) %}
+  {% if views_extensions %}
+      {% for template in views_extensions[block] %}
+          {% include template %}
+      {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{# ---------------------- Popup -------------------------- #}
+{% macro popup(id, header, body, footer) -%}
+    <div class="modal fade" id="{{ id }}">
+        <div class="modal-dialog">
+        <div class="modal-content">
+              <div class="modal-header">
+                {{ header }}
+            </div>
+            <div class="modal-body" style="padding: 0px; overflow: hidden">
+               {{ body }}
+           </div>
+           <div class="modal-footer">
+              {{ footer }}      
+          </div>
+       </div>       
+  </div>
+</div>
+{%- endmacro %}
+
+{# ---------------------- Navbar --------------------- #}
+{% macro navbar(brand_name, brand_url="#", pos="top") -%}
+<div class="navbar navbar-default navbar-fixed-{{ pos }}">
+    <div class="container">
+        <div class="navbar-header">
+             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".bottom-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{{ brand_url }}">{{ brand_name }}</a>
+     </div>
+     <div class="collapse navbar-collapse bottom-collapse">
+         {{ caller() }}
+    </div>
+</div>
+</div>
+{%- endmacro %}
+
+{# ---------------------- Pager -------------------------- #}
+{% macro pager(page, pages, generator) -%}
+{% if pages > 1 %}
+<ul class="pagination">
+    {% set min = page - 3 %}
+    {% set max = page + 3 + 1 %}
+
+    {% if min < 0 %}
+        {% set max = max - min %}
+    {% endif %}
+    {% if max >= pages %}
+        {% set min = min - max + pages %}
+    {% endif %}
+
+    {% if min < 0 %}
+        {% set min = 0 %}
+    {% endif %}
+    {% if max >= pages %}
+        {% set max = pages %}
+    {% endif %}
+
+    {% if min > 0 %}
+    <li>
+        <a href="{{ generator(0) }}">&laquo;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&laquo;</a>
+    </li>
+    {% endif %}
+    {% if page > 0 %}
+    <li>
+        <a href="{{ generator(page-1) }}">&lt;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&lt;</a>
+    </li>
+    {% endif %}
+
+    {% for p in range(min, max) %}
+    {% if page == p %}
+    <li class="active">
+        <a href="javascript:void(0)">{{ p + 1 }}</a>
+    </li>
+    {% else %}
+    <li>
+        <a href="{{ generator(p) }}">{{ p + 1 }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page + 1 < pages %}
+    <li>
+        <a href="{{ generator(page + 1) }}">&gt;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&gt;</a>
+    </li>
+    {% endif %}
+    {% if max < pages %}
+    <li>
+        <a href="{{ generator(pages - 1) }}">&raquo;</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+        <a href="javascript:void(0)">&raquo;</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+{%- endmacro %}
+
+{# ---------------------- Forms -------------------------- #}
+{% macro render_field(form, field, kwargs={}) %}
+  {% set direct_error = h.is_field_error(field.errors) %}
+  <div class="form-group{{ ' error' if direct_error else '' }} col-xs-12">
+      {% if "ignore_label" not in kwargs %}
+      <label class="col-xs-2" for="{{ field.id }}">{{ field.label.text.upper() }}
+          {% if h.is_required_form_field(field) %}
+            <strong style="color: red">&#42;</strong>
+          {%- else -%}
+            &nbsp;
+          {%- endif %}
+      </label>
+      {% endif %}
+      <div class="col-xs-8">
+        {% if "class_" in kwargs %}
+            {% set classes = "%s %s" % ("form-control", kwargs['class_']) %}         
+            {{ field(class_=classes)|safe }}
+        {% else %}
+           {% if field.type == "QuerySelectField" or field.type == "Select2Field" %}
+            {{ field(style="width: 100%", **kwargs)|safe }}
+           {% elif field.type == "BooleanField" %}
+            {{ field(class_="js-switch", **kwargs)|safe }}
+           {% else %}
+             {{ field(class_="form-control", **kwargs)|safe }}
+           {% endif %}
+        {% endif %}
+      </div>
+  </div>
+{% endmacro %}
+
+{% macro render_header(form, text) %}
+    <h3>{{ text }}</h3>
+{% endmacro %}
+
+{% macro render_form_fields(form, form_opts=None, extra=None) %}
+    {% if form.hidden_tag is defined %}
+        {{ form.hidden_tag() }}
+    {% else %}
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+        {% for f in form if f.type == 'HiddenField' %}
+            {{ f }}
+        {% endfor %}
+    {% endif %}
+
+    {% if extra %}
+        {{ extra }}
+    {% endif %}
+
+    {% if form_opts and form_opts.form_rules %}
+        {% for r in form_opts.form_rules %}
+            {{ r(form, form_opts=form_opts) }}
+        {% endfor %}
+    {% else %}
+        {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' %}
+          {% if form_opts %}
+            {% set kwargs = form_opts.widget_args.get(f.name, {}) %}
+          {% else %}
+            {% set kwargs = {} %}
+          {% endif %}
+          {{ render_field(form, f, kwargs) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro form_tag(form=None) %}
+    <form action="" method="POST" class="model-form form-horizontal" enctype="multipart/form-data">
+      <fieldset>
+        {{ caller() }}
+      </fieldset>
+    </form>
+{% endmacro %}
+
+{% macro render_form_buttons(cancel_url, extra=None) %}
+    <ul class="nav navbar-nav navbar-right">
+        {% if cancel_url %}
+            <li class="actions">
+                <a role="submit" class="save-model" href="{{ cancel_url }}">
+                    <i class="fa fa-times"></i> {{ _gettext('Cancel') }}
+                </a>
+            </li>
+        {% endif %}
+        {% if extra %}
+            {{ extra }}
+        {% endif %}
+        <li class="actions">
+            <a role="submit" class="save-model" href="javascript:void(0)">
+                <i class="fa fa-check"></i> {{ _gettext('Submit') }}
+            </a>
+        </li>
+    </ul>
+{% endmacro %}
+
+{% macro render_form(form, cancel_url, extra=None, form_opts=None) -%}
+    {% call form_tag() %}
+        {{ render_form_fields(form, form_opts=form_opts) }}
+        {{ render_form_buttons(cancel_url, extra) }}
+    {% endcall %}
+{% endmacro %}

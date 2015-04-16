@@ -1,0 +1,25 @@
+<div class="widget bar {% for class in style.classes %}{{ class }} {% endfor %}"
+        style="width: {{ style.columns * 116 + (style.columns - 1 if style.columns > 0 else 0) * 12}}px; height: {{ style.rows * 116 + (style.rows - 1 if style.rows > 0 else 0) * 12}}px; margin-bottom: 12px; {% if style.background_color %}background-color: {{ style.background_color }}{% endif %}">
+        {% if style.icon %}
+        <i class="fa fa-{{ style.icon }} pull-right"
+                {% if style.icon_color %}style="color: {{ style.icon_color }}"{% endif %}>
+        </i>
+        {% endif %}
+        <div class="title" style="margin-bottom: 30px; {% if style.title_size %}font-size: {{ style.title_size }}; {%endif %}{% if style.title_color %}color: {{ style.title_color }}{% endif %}">
+        {{ title }}</div>
+    {% for d in points %}
+        {% if loop.index0 < 4 %}
+        {% set percent = ((d.value * 100.0) / total) %}
+            <p style="font-size: 12px; line-height: 5px"><b>{{ d.value }} ({{ percent|int }}%)</b> 
+            {% if d.label|length > 20 %}{{ d.label[:20] }}[...]{% else %}{{ d.label }}{% endif %}</p>
+            <div class="progress" style="height: 5px; background-color: #f3f3f3">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{{ d.value }}" aria-valuemin="0" aria-valuemax="{{ total }}" style="width: {{ percent|int }}%;
+                {% if style.bar_colors %}background-color:
+                        {{ style.bar_colors[loop.index0] }}
+                {% endif %}">
+                    <span class="sr-only">60% Complete</span>
+                </div>
+            </div>
+            {% endif %}
+    {% endfor %}
+</div>

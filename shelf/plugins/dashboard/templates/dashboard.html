@@ -1,0 +1,130 @@
+{% extends 'admin/master.html' %}
+
+{% block head_css %}
+{{ super() }}
+<style>
+        .widget { z-index: 0; }
+        .widget:hover { z-index: 10; }
+</style>
+<link href="{{ url_for('dashboard.static', filename='dashboard.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('dashboard.static', filename='morris.css') }}">
+{% endblock %}
+
+{% block superbody %}
+  <div class="contain">
+        {% for w in widgets %}
+                {{ w|safe }}
+        {% endfor %}
+  </div>
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('dashboard.static', filename='masonry.min.js') }}"></script>
+<script type="text/javascript"  src="{{ url_for('dashboard.static',
+        filename='raphael-min.js') }}"></script>
+<script src="{{ url_for('dashboard.static', filename='morris.min.js') }}"></script>
+
+<script language="javascript">
+    (function($) {
+      Masonry.prototype.measureColumns = function () {
+        this.getContainerWidth();
+        // if columnWidth is 0, default to outerWidth of first item
+        if ( !this.columnWidth ) {
+          var firstItem = this.items[0];
+          var firstItemElem = firstItem && firstItem.element;
+          // columnWidth fall back to item of first element
+          this.columnWidth = firstItemElem && getSize( firstItemElem ).outerWidth ||
+          // if first elem has no width, default to size of container
+          this.containerWidth;
+        }
+        this.columnWidth += this.gutter;
+        this.cols = Math.floor( ( this.containerWidth + this.gutter ) / this.columnWidth );
+        console.log("cols =>", this.cols)
+        if (this.cols >= 7)
+          this.cols = 8;
+        else if (this.cols > 4)
+          this.cols = 4;
+        this.cols = Math.max( this.cols, 1 );
+      };
+
+     $('#wrap > .contain').masonry({
+              itemSelector : '.widget',
+              gutter: 12,
+              transitionDuration: 0,
+              columnWidth: 116,
+              isFitWidth: true
+      });
+
+      $('.evolution').each(function (idx, elem) {
+            Morris.Line({
+              element: $(elem).children('div.graph'),
+              data: JSON.parse($(elem).children('div.graph').attr('data-graph')),
+              xkey: "x",
+              ykeys: ["y"],
+              labels: ['Ventes'],
+              lineColors: ['#8ac5aa'],
+              postUnits: ['€'],
+              gridTextFamily: "Open Sans",
+              resize: true
+            });
+      });
+
+      $('.donut').each(function (idx, elem) {
+                var colors = JSON.parse($(elem).children('div.graph').attr('data-color'));
+                var labelColor = $(elem).children('div.graph').attr('data-label-color');
+                var data = JSON.parse($(elem).children('div.graph').attr('data-graph'));
+
+                var interval = Math.floor(colors.length / data.length);
+                console.log(interval);
+                var newCols = [];
+                var n = 0;
+                while (newCols.length < data.length)
+                {
+                  newCols.push(colors[n]);
+                  n += interval;
+                }
+                console.log(newCols);
+
+                if (colors && labelColor)
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: data,
+                                  colors: newCols,
+                                  labelColor: labelColor,
+                                  formatter: function (y, data) { return data.percent + '%' }
+                                });
+                }
+                else if (colors)
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: data,
+                                  colors: newCols,
+                                  formatter: function (y, data) { return data.percent + '%' }
+                                });
+                }
+                else if (labelColor)
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: data,
+                                  labelColor: labelColor,
+                                  formatter: function (y, data) { return data.percent + '%' }
+                });
+                }
+                else
+                {
+                        Morris.Donut({
+                                  element: $(elem).children('div.graph'),
+                                  data: JSON.parse($(elem).children('div.graph').attr('data-graph')),
+                                  formatter: function (y, data) { return data.percent + '%' }
+                                });
+                }
+
+             });
+    })(jQuery);
+</script>
+
+{% endblock %}

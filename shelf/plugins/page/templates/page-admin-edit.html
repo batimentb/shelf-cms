@@ -1,0 +1,12 @@
+{% extends "shelf/model/edit.html" %}
+
+{% block model_create_title %}
+    <h1>{{ model.get_name().upper() }}</h1>
+{% endblock %}
+
+{% block page_body %}
+    {{ super() }}
+    {% call lib.navbar(model.get_name(), pos="bottom") %}
+        {{ lib.render_form_buttons(return_url, edit_extra_btn()) }}
+    {% endcall %}
+{% endblock %}

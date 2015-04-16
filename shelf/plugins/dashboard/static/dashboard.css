@@ -1,0 +1,88 @@
+#wrap > .contain {
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 50px 0;
+}
+
+.progress {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+.widget {
+	padding: 18px;
+	font-family: 'Open Sans', sans-serif;
+	color: #4c4c4c;
+}
+
+.widget .title {
+	font-size: 12px;
+}
+
+.widget.picture .data {
+  font-size: 20px;
+}
+
+.widget.picture .legend {
+  font-size: 12px;
+}
+
+.widget.text .data {
+	font-size: 30px;
+}
+
+.widget.text .legend {
+	font-size: 12px;
+}
+
+.widget.text .legend .value {
+	color: #77af96;
+}
+
+.widget.text .legend .value-bad {
+	color: #ff4262;
+}
+
+.text p {
+  font-size: 12px;
+  font-family: "Open Sans";
+  color: #505050;
+}
+
+.text p span {
+  font-weight: 300;
+}
+
+.text p.product {
+  font-weight: 700;
+}
+
+.text p.medium {
+  font-weight: 700;
+}
+
+.text p.message {
+  font-style: italic;
+}
+
+.operation-name {
+  background-color: #292a2d;
+  color: white;
+  font-family: "Open Sans";
+  font-weight: 300;
+}
+
+.operation-name p {
+  color: white;
+  font-family: "Open Sans";
+  font-weight: 300;
+}
+
+.operation-name b {
+  font-weight: 700;
+}
+
+.widget { z-index: 0; }
+.widget:hover { z-index: 10; }

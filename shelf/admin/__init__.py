@@ -1,2 +1,1 @@
-from base import ShelfAdmin
-from view import ShelfModelView, ShelfPageView
+from base import Admin

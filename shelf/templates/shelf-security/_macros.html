@@ -1,0 +1,51 @@
+{% macro render_field_with_errors(field, icon) %}
+<div class="input-group {% if field.errors %}has-error has-feedback{% endif %}">
+  {% if icon %}
+  	<span class="input-group-addon"><i class="fa fa-{{ icon }}"></i></span>
+  {% endif %}
+  {{ field(**kwargs) }}
+</div>
+{% endmacro %}
+
+{% macro render_field(field, label=False) %}
+	{{ field(**kwargs) }}
+	{% if label %}
+		{{ field.label }}
+	{% endif %}
+{% endmacro %}
+
+{% macro render_error(error) %}
+	<div class="alert alert-danger">
+      <a href="javascript:void(0)" class="close" data-dismiss="alert">x</a>
+      {{ error }}
+    </div>
+{% endmacro %}
+
+{% macro render_errors(form) %}
+	{% for field in form %}
+		{% for error in field.errors %}
+			{{ render_error(error) }}
+		{% endfor %}
+	{% endfor %}
+{% endmacro %}
+
+{% macro render_menu(type) %}
+	{% if security.recoverable %}
+		<p>
+			<a href="{{ url_for_security('forgot_password') }}">I forgot my password</a>
+		</p>
+	{% endif %}
+	{% if security.confirmable %}
+		<p>
+			<a href="{{ url_for_security('send_confirmation') }}">Send confirmation</a>
+		</p>
+	{% endif %}
+	{% if security.registerable %}
+		<p>
+			<a href="{{ url_for_security('register') }}">Create an account</a>
+		</p>
+	{% endif %}
+	<p>
+		<a href="{{ url_for_security('login') }}">Back to login</a>
+	</p>
+{% endmacro %}

@@ -1,0 +1,49 @@
+  {% if field.data and field.data.get_slides_length() %}
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+      {% for slide in field.data.slides %}
+      <li data-target="#carousel-example-generic" data-slide-to="{{ loop.index0 }}"{% if loop.first %} class="active"{% endif %}></li>
+      {% endfor %}
+    </ol>
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner">
+      {% for slide in field.data.slides %}
+      <div class="item{% if loop.first %} active{% endif %}">
+        {% set url = slide.get_picture().get_path() %}
+        {% if url and url != "None" %}
+        <img src="{{ url }}" alt="{{ slide.get_title() }}">
+        {% else %}
+        <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="" >
+        {% endif %}
+        <div class="carousel-caption">
+          {{ slide.get_title() }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Controls -->
+    <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left"></span>
+    </a>
+    <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right"></span>
+    </a>
+  </div>
+</div>
+<div class="col-xs-2">
+  <a href="{{ url_for('%s.edit_view' % field.slider_view_endpoint, url=request.url, id=field.data.id) }}" type="button" class="btn btn-default side-btn">EDIT</a>
+  {% elif field.data %}
+  <div class="thumbnail">
+    <img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}"  style="max-height: 420px" alt="...">
+  </div>
+</div>
+<div class="col-xs-2">
+  <a href="{{ url_for('%s.edit_view' % field.slider_view_endpoint, url=request.url, id=field.data.id) }}" type="button" class="btn btn-default side-btn">EDIT</a>
+  {% else %}
+  <div class="thumbnail">
+    <img  style="max-height: 420px" src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="...">
+  </div>
+{% endif %}

@@ -1,0 +1,45 @@
+<script language="javascript" src="{{ url_for('wysiwyg.static', filename='tinymce/tinymce.min.js') }}"></script>
+<script language="javascript">
+	(function($) {
+		$('.model-form').on('DOMNodeInserted', "div.inline-field-list", function(event) {
+			if ($(event.target).hasClass('inline-field'))
+			{
+				if ($(event.target).find('.wysiwyg-classic').length > 0)
+				{
+					tinymce.init({
+						selector: "#" + $(event.target).attr('id') + " .wysiwyg-classic",
+			            menubar: false,
+			            toolbar: "bold italic | bullist numlist blockquote | paste link nonbreaking | code",
+			            plugins: "paste,link,code,nonbreaking,autoresize",
+			            paste_as_text: true,
+			            statusbar: false
+					});
+				}
+				if ($(event.target).find('.wysiwyg-full').length > 0)
+				{
+					tinymce.init({
+						selector: "#" + $(event.target).attr('id') + " .wysiwyg-full",
+			            toolbar: false,
+			            statusbar: false,
+						plugins: "autoresize,paste,image,link,code,searchreplace,table,media"
+					});
+				}
+			}
+			
+		});
+		tinymce.init({
+			selector: ".wysiwyg-classic",
+            menubar: false,
+            toolbar: "bold italic | bullist numlist blockquote | paste link nonbreaking | code",
+            plugins: "paste,link,code,nonbreaking,autoresize",
+            paste_as_text: true,
+            statusbar: false,
+		});
+		tinymce.init({
+			selector: ".wysiwyg-full",
+            toolbar: false,
+            statusbar: false,
+			plugins: "autoresize,paste,image,link,code,searchreplace,table,media"
+		});
+	})(jQuery);
+</script>

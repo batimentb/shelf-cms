@@ -1,0 +1,33 @@
+<script language="javascript">
+	(function($) {
+        $('.model-form').on('click', "button.modal-open", function() {
+        	if ($(this).closest('.form-group').find('input').hasClass('remote-file'))
+    		{
+	          $(this).closest('.form-group').find('.modal').modal({
+	            remote: "/admin/fileadmin/modal/",
+	            toggle: "modal"
+	          });
+	      }
+	      else if ($(this).closest('.form-group').find('input').hasClass('picture'))
+	      {
+	      	$(this).closest('.form-group').find('.modal').modal({
+	            remote: "/admin/fileadmin/modal-icons/",
+	            toggle: "modal"
+	          });
+	      }
+          return false;
+        });
+        $('.model-form').on('click', "button.remove", function() {
+        	if ($(this).closest('.form-group').find('input').hasClass('remote-file'))
+    		{
+	          $(this).closest('.form-group').find('input').val("");
+	      }
+	      else if ($(this).closest('.form-group').find('input').hasClass('picture'))
+	      {
+	      	$(this).closest('.form-group').find('img').attr('src', "/shelf/static/shelf/img/missing-picture.png");
+        $(this).closest('.form-group').find('input[type=hidden]').val("");
+	      }
+          return false;
+        });
+	})(jQuery);
+</script>

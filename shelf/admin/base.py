@@ -1,51 +1,33 @@
-from flask_admin import Admin
-from view import DashboardView, Library
-from flask_admin.base import MenuItem
-import os.path as op
+import flask_admin
+from view import IndexView
 
-class ShelfAdmin(Admin):
-    def __init__(self, app=None, name=None,
-                 url=None, subdomain=None,
-                 index_view=None,
-                 translations_path=None,
-                 endpoint=None,
-                 static_url_path=None, 
-                 base_template=None, shelf=None):
-        if base_template is None:
-            base_template = "shelf/base/base.html"
-        if index_view is None:
-            index_view = DashboardView(name="Dashboard", endpoint=endpoint, url=url, template='shelf/base/dashboard.html')
-        super(ShelfAdmin, self).__init__(app, name, url, subdomain, 
-            index_view, translations_path, 
-            endpoint, static_url_path, base_template)
-        if shelf:
-            self.shelf = shelf
-        if app:
-            if "SHELF_LIBRARY_FOLDER" in app.config:
-                self.library = Library(app.config["SHELF_LIBRARY_FOLDER"], "/"+app.config["SHELF_LIBRARY_FOLDER"]+"/", name="Files")
-            else:
-                self.library = Library('static', "/static/", name="Files")
-        if app:
-            app.register_blueprint(self.library.create_blueprint(self))         
 
-    def add_widget(self, view):
-        self.index_view.add_widget(view)
+class Admin(flask_admin.Admin):
+    """ Custom admin class """
 
-    def add_setting(self, view):
-    	pass
+    def __init__(self, *args, **kwargs):
+        """ Init class """
 
-    def menu(self):
-        tmp = super(ShelfAdmin, self).menu()
-        content = tmp[2:]
-        content_item = MenuItem("Content")
-        library_item = MenuItem(self.library.name, view=self.library)
-        for c in content:
-            content_item.add_child(c)
-        return [tmp[0], content_item, library_item]
-    	#return super(ShelfAdmin, self).menu()
+        if "base_template" not in kwargs:
+            kwargs["base_template"] = "shelf/base.html"
 
-    def menu_links(self):
-    	return super(ShelfAdmin, self).menu_links()
+        if "index_view" not in kwargs:
+        	endpoint = kwargs['endpoint'] if 'endpoint' in kwargs else None
+        	url = kwargs['url'] if 'url' in kwargs else None
+        	kwargs["index_view"] = IndexView(endpoint=endpoint, url=url, template='shelf/index.html')
 
-    def content(self):
-        return super(ShelfAdmin, self).menu()[2:]
+        self.css = []
+        self.js = []
+
+        self.auto_joins = []
+        self.filters = []
+        self.form = []
+        self.inline_form_models = []
+        self.list_columns = []
+        self.sortable_columns = []
+
+        super(Admin, self).__init__(*args, **kwargs)
+
+
+    def add_widget(self, *args, **kwargs):
+        self.index_view.add_widget(*args, **kwargs)

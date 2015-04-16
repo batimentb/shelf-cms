@@ -1,0 +1,39 @@
+
+		
+	{% if field.data and field.data.get_path() %}
+		{% set url = field.data.get_path() %}
+		<input type="hidden" class="picture" id="{{ field.id }}" name="{{ field.name }}" value="{{ url }}">
+		<div class="thumbnail">
+			<img src="{{ url }}" alt="{{ field.id }}" style="max-height: 420px"></img>
+		</div>
+	{% else %}
+		<input type="hidden" class="picture" id="{{ field.id }}" name="{{ field.name }}" value="">
+		<div class="thumbnail">
+			<img src="{{ url_for('shelf.static', filename='shelf/img/missing-picture.png') }}" alt="{{ field.id }}"  style="max-height: 420px"></img>
+		</div>
+	{% endif %}
+	</div>
+	<div class="col-xs-2">
+	  <button class="btn btn-default modal-open side-btn" type="button">EDIT</button>
+	  <button class="btn btn-default remove side-btn" type="button">REMOVE</button>
+	</div>
+	<div class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+					<h3>Please select a picture</h3>
+				</div>
+				<div class="modal-body">
+				</div>
+			</div>
+		</div>
+
+{#<div class="picture widget">
+	<img src="{{ args['data']['path'] }}" width="159" height="100" alt="{{ args['id'] }}"></img>
+	<button class="btn btn-default modal-open" type="button">Select picture</button>
+	
+
+	<!-- Modal -->
+	
+</div>#}

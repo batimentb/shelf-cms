@@ -1,0 +1,36 @@
+{% if model.is_private() and (model.can_publish() or model.can_review()) %}
+<li class="actions review dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><span><i class="fa fa-search"></i> {{ _gettext('Review') }}</span> <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        {% if model.can_review() %}
+        <li class="actions draft"><a href="javascript:void(0)"><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</a></li>
+        {% endif %}
+        <li class="actions review" style="display:none"><a href="javascript:void(0)"><i class="fa fa-search"></i> {{ _gettext('Review') }}</a></li>
+        {% if model.can_publish() %}
+        <li class="actions publish"><a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</a></li>
+        {% endif %}
+    </ul>
+</li>
+{% elif model.is_public() and model.can_unpublish() %}
+<li class="actions publish dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><span><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</span> <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        <li class="actions draft"><a href="javascript:void(0)"><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</a></li>
+        <li class="actions review"><a href="javascript:void(0)"><i class="fa fa-search"></i> {{ _gettext('Review') }}</a></li>
+        <li class="actions publish" style="display:none"><a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</a></li>
+    </ul>
+</li>
+{% elif model.is_draft() and (model.can_review() or model.can_publish()) %}
+<li class="actions draft dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><span><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</span> <b class="caret"></b></a>
+    <ul class="dropdown-menu">
+        <li class="actions draft" style="display:none"><a href="javascript:void(0)"><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</a></li>
+        {% if model.can_review() %}
+        <li class="actions review"><a href="javascript:void(0)"><i class="fa fa-search"></i> {{ _gettext('Review') }}</a></li>
+        {% endif %}
+        {% if model.can_publish() %}
+        <li class="actions publish"><a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</a></li>
+        {% endif %}
+    </ul>
+</li>
+{% endif %}

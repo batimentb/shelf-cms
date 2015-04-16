@@ -78,7 +78,7 @@
       this.applyStyle = function($el, name) {
         // Process converters first
         for (var conv in fieldConverters) {
-            var fildConv = fieldConverters[conv];
+            var fieldConv = fieldConverters[conv];
 
             if (fieldConv($el, name))
                 return true;
@@ -100,7 +100,7 @@
                     });
                 }
 
-                //$el.select2(opts);
+                $el.select2(opts);
                 return true;
             case 'select2-ajax':
                 processAjaxWidget($el, name);
@@ -127,23 +127,33 @@
       * Add inline form field
       *
       * @method addInlineField
-      * @param {String} id Form ID
-      * @param {Node} el Form element
-      * @param {String} template Form template
+      * @param {Node} el Button DOM node
+      * @param {String} elID Form ID
       */
-      this.addInlineField = function(id, el, template) {
-        var $el = $(el);
-        var $template = $($(template).text());
-
+      this.addInlineField = function(el, elID) {
+        // Get current inline field
+        var $el = $(el).closest('.inline-field');
         // Figure out new field ID
-        var lastField = $el.children('.fa-inline-field').last();
+        var id = elID;
+
+        var $parentForm = $el.parent().closest('.inline-field');
+
+        if ($parentForm.length > 0) {
+          id = $parentForm.attr('id') + '-' + elID;
+        }
+
+        var $fieldList = $el.find('> .inline-field-list');
+        var $lastField = $fieldList.children('.inline-field').last();
 
         var prefix = id + '-0';
-        if (lastField.length > 0) {
-            var parts = $(lastField[0]).attr('id').split('-');
+        if ($lastField.length > 0) {
+            var parts = $lastField.attr('id').split('-');
             idx = parseInt(parts[parts.length - 1], 10) + 1;
             prefix = id + '-' + idx;
         }
+
+        // Get tempalate
+        var $template = $($el.find('> .inline-field-template').text());
 
         // Set form ID
         $template.attr('id', prefix);
@@ -162,20 +172,37 @@
             me.attr('name', name);
         });
 
-        $template.appendTo($el);
+        $('.accordion', $template).each(function(e) {
+            var me = $(this);
+
+            var id = me.attr('id');
+            id = prefix + (id !== '' ? '-' + id : '');
+            me.attr('id', id);
+        });
+
+        $('.accordion-body', $template).each(function(e) {
+            var me = $(this);
+
+            var id = me.attr('id');
+            id = prefix + (id !== '' ? '-' + id : '');
+            me.attr('id', id);
+        });
+
+        $('.accordion-toggle', $template).each(function(e) {
+            var me = $(this);
+
+            var id = me.attr('href').substring(1);
+            id = "#" + prefix + (id !== '' ? '-' + id : '');
+            me.attr('href', id);
+        });
+
+        $template.appendTo($fieldList);
 
         // Select first field
         $('input:first', $template).focus();
 
         // Apply styles
         this.applyGlobalStyles($template);
-
-        $('.wysiwyg', $template).each(function (e) {
-          $(this).wysihtml5({
-                html: true,
-            });     
-        });
-        
       };
 
       /**
@@ -192,45 +219,28 @@
             self.applyStyle($el, $el.attr('data-role'));
         });
       };
+
+      /**
+      * Add a field converter for customizing styles
+      *
+      * @method addFieldConverter
+      * @param {converter} function($el, name)
+      */
+      this.addFieldConverter = function(converter) {
+          fieldConverters.push(converter);
+      };
     };
 
-    // Add live event handler
-    $('.fa-remove-field').on('click', function(e) {
+    // Add on event handler
+    $('body').on('click', '.inline-remove-field' , function(e) {
         e.preventDefault();
 
-        var form = $(this).closest('.fa-inline-field');
+        var form = $(this).closest('.inline-field');
         form.remove();
     });
 
     // Expose faForm globally
     var faForm = window.faForm = new AdminForm();
-
-     /*$('a.save-model').click(function (e) {
-          $("form.model-form").submit();
-          e.stopPropagation();
-      });
-      $('a.update-model').click(function (e) {
-          $('input[name=_continue_editing]').val('1');
-          $("form.model-form").submit();
-          e.stopPropagation();
-      });
-      $('.wysiwyg').wysihtml5({
-          html: true,
-      });  
-
-      $('a.add-new').click(function (e) {
-          $('input[name=_continue_editing]').val('1');
-          $("form.model-form").submit();
-          e.stopPropagation();
-      });
-
-      $('button.modal-open').on('click', function() {
-        $(this).parent().parent().parent().find('.modal').modal({
-          remote: "/admin/shelffileadmin/modal/",
-          toggle: "modal"
-        });
-        return false;
-      });*/
 
     // Apply global styles for current page after page loaded
     $(function() {

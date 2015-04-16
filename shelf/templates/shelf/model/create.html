@@ -1,33 +1,41 @@
-{% extends 'shelf/base/base.html' %}
-{% import 'shelf/base/lib.html' as lib with context %}
+{% extends 'admin/master.html' %}
+{% import 'shelf/lib.html' as lib with context %}
+{% import 'admin/static.html' as admin_static with context %}
+{% import 'shelf/model/layout.html' as model_layout with context %}
 
-{% macro extra() %}
-  <input name="_add_another" type="submit" class="btn btn-large" value="{{ _gettext('Save and Add') }}" />
+{% macro extra_btn() %}
+    <li class="actions">
+        <a role="submit" class="_add_another" href="javascript:void(0)">
+            <i class="fa fa-refresh"></i> {{ _gettext('Save and Add') }}
+        </a>
+    </li>
 {% endmacro %}
 
-{% block iscontent %}active{% endblock %}
+{% macro extra_fld() %}
+{% endmacro %}
 
 {% block head %}
     {{ super() }}
-    <link href="{{ url_for('admin.static', filename='select2/select2.css') }}" rel="stylesheet">
-    <link href="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
-    <link href="{{ url_for('shelf.static', filename='shelf/css/bootstrap3-wysihtml5.min.css') }}"  rel="stylesheet" />
+    <link href="{{ admin_static.url(filename='select2/select2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('shelf.static', filename='switchery/switchery.min.css') }}" rel="stylesheet">
+    <link href="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-    <div class="row" style="margin-top: 50px; background-color: #ffffff">
-        <div class="col-xs-12" style="border-bottom: 1px solid #ddd; padding-top: 5px; padding-bottom: 15px; padding-left: 25px">
-            <h1>{{ admin_view.name.upper() }}</h1>
+    <div class="row create">
+        <div class="col-xs-12 title">
+            {% block model_create_title %}
+                <h1>{{ admin_view.name.upper() }}</h1>
+            {% endblock %}
         </div>
-        <div class="col-xs-12"  style="padding-top: 25px; padding-bottom: 15px">
+        <div class="col-xs-12 content">
           {% call lib.form_tag(form) %}
-              {{ lib.render_form_fields(form) }}
-              {#{ lib.render_form_buttons(return_url, extra()) }#}
+              {{ lib.render_form_fields(form, form_opts=form_opts, extra=extra_fld()) }}
           {% endcall %}
         </div>
-    </div>
 {% endblock %}
 
+<<<<<<< HEAD
 {% block bottom %}
     <div class="navbar navbar-default navbar-fixed-bottom">
         <div class="container">
@@ -77,52 +85,41 @@
   <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.min.js') }}"></script>
   <script src="{{ url_for('shelf.static', filename='shelf/js/form.js') }}"></script>
   <script language="javascript">
+=======
+{% block page_body %}
+    {{ super() }}
+    {% call lib.navbar(admin_view.name, pos="bottom") %}
+        {{ lib.render_form_buttons(return_url, extra_btn()) }}
+    {% endcall %}
+{% endblock %}
+
+{% block tail_js %}
+    {{ super() }}
+    <script src="{{ admin_static.url(filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
+    <script src="{{ url_for('shelf.static', filename='switchery/switchery.min.js') }}"></script>
+    <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
+    <script language="javascript">
+>>>>>>> new
         (function($) {
             $('a.save-model').click(function (e) {
                 $("form.model-form").submit();
                 e.stopPropagation();
             });
 
-            $('a.add-new').click(function (e) {
-                $('input[name=_continue_editing]').val('1');
+            $('a._add_another').click(function (e) {
+                $("form.model-form").append(
+                    "<input type='hidden' name='_add_another' value='1'></input>"
+                );
                 $("form.model-form").submit();
                 e.stopPropagation();
             });
 
-            $('button.modal-open').on('click', function() {
-              $(this).closest('.widget').find('.modal').modal({
-                remote: "/admin/library/modal/",
-                toggle: "modal"
-              });
-              return false;
-            });
+            var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
 
-            $('ul.dropdown-menu li.actions.draft > a').click(function (e) {
-              $('li.actions.dropdown > a.dropdown-toggle > span').html($(this).html());
-              $('li.actions.dropdown').removeClass("review publish").addClass("draft");
-              $('ul.dropdown-menu li.actions.review').show();
-              $('ul.dropdown-menu li.actions.publish').show();
-              $('ul.dropdown-menu li.actions.draft').hide();
-              $('#shelf_state').val("draft");
+            elems.forEach(function(html) {
+              var switchery = new Switchery(html, { color: '#a9a3d9', secondaryColor: '#e0e0e0' });
             });
-
-            $('ul.dropdown-menu li.actions.review > a').click(function (e) {
-              $('li.actions.dropdown > a.dropdown-toggle > span').html($(this).html());
-              $('li.actions.dropdown').removeClass("draft publish").addClass("review");
-              $('ul.dropdown-menu li.actions.draft').show();
-              $('ul.dropdown-menu li.actions.publish').show();
-              $('ul.dropdown-menu li.actions.review').hide();
-              $('#shelf_state').val("private");
-            });
-
-            $('ul.dropdown-menu li.actions.publish > a').click(function (e) {
-              $('li.actions.dropdown > a.dropdown-toggle > span').html($(this).html());
-              $('li.actions.dropdown').removeClass("draft review").addClass("publish");
-              $('ul.dropdown-menu li.actions.draft').show();
-              $('ul.dropdown-menu li.actions.review').show();
-              $('ul.dropdown-menu li.actions.publish').hide();
-              $('#shelf_state').val("public");
-            });
+<<<<<<< HEAD
 
        tinymce.init({
            selector: ".wysiwyg-full",
@@ -132,6 +129,8 @@
             $('.wysiwyg').wysihtml5({
                 html: true,
             });
+=======
+>>>>>>> new
         })(jQuery);
     </script>
 {% endblock %}

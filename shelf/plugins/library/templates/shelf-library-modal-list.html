@@ -1,0 +1,113 @@
+<div class="modal-dialog">
+    <div class="modal-content" style='border-radius: 0px'>
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times fa-lg"></i></button>
+            {% if dir_path %}
+            <h1>/{{ dir_path.upper() }}</h1>
+            {% else %}
+            <h1>{{ admin_view.name.upper() }}</h1>
+            {% endif %}
+        </div>
+
+
+        <div class="modal-body"  style="padding: 0px; overflow: hidden">
+            <table class="table table-hover model-list modal-img">
+                {% for name, path, is_dir, size in items %}
+                <tr {% if not is_dir %}class="file"{% endif %}>
+                    {% if is_dir %}
+                    <td colspan="2">
+                        <i style="width: 20px" class="fa fa-folder"></i> 
+                        <a href="{{ get_dir_url('.modal_index', path)|safe }}" class="link"><span>{{ name }}</span></a>
+                    </td>
+                    {% else %}
+                    <td>
+                        {% set icons_by_mime = {'image': 'fa-picture-o', 'text': 'fa-file-text', 'video': 'fa-film', 'other': 'fa-file', 'archive': 'fa-save'} %}
+                        <i style="width: 20px" class="fa {{ icons_by_mime[mimes[path]] }}"></i> 
+                        <a href="{{ get_file_url(path)|safe }}" target="_new"><span>{{ name }}</span></a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="modal-footer">
+
+                <div style="height: 37px; width: 100%; padding: 0px; background-color: #ff9d98">
+                    <ul class="nav nav-pills" style="float: left; display: inline-block">
+                        <li>
+                            {% if dir_path %}
+                            <a href="{{ url_for('.modal_iconic_index', path=dir_path) }}"
+                            class="link">
+                            {% else %}
+                            <a href="{{ url_for('.modal_iconic_index') }}"
+                            class="link">
+                            {% endif %}
+                            <i class="fa fa-th fa-lg"></i> Icons</a>
+                        </li>
+                    </ul>
+
+                    {% block model_menu_bar %}
+                    <ul class="nav nav-pills pull-right" style="display: inline-block; background-color: #ef8580" >
+                        <li class="actions validate disabled">
+                            <a href="javascript:void(0)"  style="color: #fff"><i class="fa fa-check"></i>  Validate</a>
+                        </li>
+                        <li class="actions cancel">
+                            <a href="javascript:void(0)"  style="color: #fff"><i class="fa fa-times"></i>  Cancel</a>
+                        </li>                        
+                    </ul>
+                    {% endblock %}
+                </div>
+        </div>
+    </div> 
+</div>
+
+<script>
+$('a.link').click(function() {
+    $(this).closest('.modal').load($(this).attr('href'));
+    return false;
+});
+$('tr.file').click(function() {
+
+    if ($(this).hasClass('selected'))
+    {
+        $(this).removeClass('selected');
+    }
+    else
+    {
+        $('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+    }
+
+    if ($('tr.selected').length > 0)
+    {
+        $('li.actions.validate').removeClass('disabled');
+    }
+    else
+    {
+        $('li.actions.validate').addClass('disabled');
+    }
+
+    return false;
+});
+
+$('li.actions.cancel').click(function() {
+    $(this).closest('.modal').modal('hide');
+});
+
+$('li.actions.validate').click(function() {
+    if ($(this).closest('.form-group').find('input').hasClass('remote-file'))
+    {
+        $(this).closest('.form-group').find('input').val($('tr.selected a').attr('href'));
+        $(this).closest('.modal').modal('hide');
+    }
+    else if ($(this).closest('.form-group').find('input').hasClass('picture'))
+    {
+        $(this).closest('.form-group').find('img').attr('src', $('tr.selected a').attr('href'));
+        $(this).closest('.form-group').find('input[type=hidden]').val($('tr.selected a').attr('href'));
+        $(this).closest('.modal').modal('hide');
+    }    
+});
+
+</script>
+

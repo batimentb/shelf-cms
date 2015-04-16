@@ -1,0 +1,13 @@
+<div class="widget text {% for class in style.classes %}{{ class }} {% endfor %}"
+        style="width: {{ style.columns * 116 + (style.columns - 1 if style.columns > 0 else 0) * 12}}px; height: {{ style.rows * 116 + (style.rows - 1 if style.rows > 0 else 0) * 12}}px; margin-bottom: 12px; {% if style.background_color %}background-color: {{ style.background_color }}{% endif %}">
+        {% if style.icon %}
+        <i class="fa fa-{{ style.icon }} pull-right"
+                {% if style.icon_color %}style="color: {{ style.icon_color }}"{% endif %}>
+        </i>
+        {% endif %}
+        <div class="title" style="{% if style.title_size %}font-size: {{ style.title_size }}; {%endif %}{% if style.title_color %}color: {{ style.title_color }}{% endif %}">{{ title }}</div>
+        <div class="data" style="{% if style.data_size %}font-size: {{ style.data_size }}; {%endif %}{% if style.data_color %}color: {{ style.data_color }}{% endif %}">{{ data }}</div>
+        {% if legend %}
+        <div class="legend" style="{% if style.legend_size %}font-size: {{ style.legend_size }}; {%endif %}{% if style.legend_color %}color: {{ style.legend_color }}{% endif %}">{{ legend|safe }}</div>
+        {% endif %}
+</div>

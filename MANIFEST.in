@@ -1,3 +1,4 @@
-include README.rst
 recursive-include shelf/static *
+recursive-include shelf/plugins/*/static *
 recursive-include shelf/templates *
+recursive-include shelf/plugins/*/templates *

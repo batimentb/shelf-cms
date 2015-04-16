@@ -1,0 +1,37 @@
+{% import 'shelf/lib.html' as lib with context %}
+
+{% macro render_form_fields(form, form_opts=None, formfield=None, extra=None) %}
+    {% if form.hidden_tag is defined %}
+        {{ form.hidden_tag() }}
+    {% else %}
+        {% if csrf_token %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% endif %}
+        {% for f in form if f.type == 'HiddenField' %}
+            {{ f }}
+        {% endfor %}
+    {% endif %}
+
+    {% if extra %}
+        {{ extra }}
+    {% endif %}
+
+    {% if form_opts and form_opts.form_rules %}
+        {% for r in form_opts.form_rules %}
+            {{ r(form, form_opts=form_opts) }}
+        {% endfor %}
+    {% else %}
+        {% for f in form if f.type != 'HiddenField' and f.type != 'CSRFTokenField' and f != formfield.position_field %}
+          {% if form_opts %}
+            {% set kwargs = form_opts.widget_args.get(f.name, {}) %}
+          {% else %}
+            {% set kwargs = {} %}
+          {% endif %}
+          {{ lib.render_field(form, f, kwargs) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+<div class="inline-form-field">
+  {{ render_form_fields(field.form, form_opts=form_opts, formfield=field) }}
+</div>

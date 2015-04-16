@@ -1,0 +1,79 @@
+{% macro render_inline_fields(field, template, render, check=None) %}
+</div>
+<div class="col-xs-2">
+</div>
+<div class="col-xs-12" >
+<div class="inline-field"  style="margin-left: -30px; margin-right: -30px">
+    <div class="inline-field-list container">
+
+        {% for subfield in field %}
+        <div id="{{ subfield.id }}" class="inline-field row" style="margin: 0; margin-right: 15px; padding-top: 30px; padding-bottom: 30px">
+            <div class="col-xs-2">
+                <label>{{ subfield.label.text.upper() }}</label>
+            </div>
+            <div class="col-xs-2">
+                {{ subfield.position_field }}
+            </div>
+            {% if subfield.inline_thumbnail and subfield.inline_title %}
+                <div class="col-xs-2">
+                    <div class="thumbnail" style="margin-bottom: 0">
+                        <img src="{{ subfield.inline_thumbnail }}">
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <h4 class="media-heading">{{ subfield.inline_title }}</h4>
+                </div>
+            {% elif subfield.inline_thumbnail %}
+                <div class="col-xs-4">
+                    <div class="thumbnail" style="margin-bottom: 0">
+                        <img src="{{ subfield.inline_thumbnail }}">
+                    </div>
+                </div>
+            {% elif subfield.inline_title %}
+                <div class="col-xs-4">
+                    <h4 class="media-heading">{{ subfield.inline_title }}</h4>
+                </div>
+            {% endif %}
+            
+            {%- if not check or check(subfield) %}
+                {% if subfield.get_pk and subfield.get_pk() %}
+                <div class="inline-field-control col-xs-2"  style="padding: 0px; float: left">
+                    <input type="checkbox" name="del-{{ subfield.id }}" class="js-switch" id="del-{{ subfield.id }}" />
+                    <label for="del-{{ subfield.id }}" style="padding: 0px; display: inline">{{ _gettext('Delete?') }}</label>
+                </div>
+                {% else %}
+                <div class="inline-field-control col-xs-2">
+                    <a href="javascript:void(0)" class="inline-remove-field"><i class="icon-remove"></i></a>
+                </div>
+                {% endif %}
+            {%- endif -%}
+            <div class="col-xs-2">
+                <button type="button" class="btn btn-default accordion-toggle side-btn" data-toggle="collapse"  href="#{{ subfield.id }}-panel" data-parent="#{{ id }}-accordion">EDIT</button>
+            </div>
+            <div class="accordion col-xs-12" id="{{ subfield.id }}-accordion" style="border: 0px; margin-top: 10px; padding: 0">
+                <div class="accordion-group">
+                    <div id="{{ subfield.id }}-panel" class="accordion-body collapse" style="border: 0px">
+                        <div class="accordion-inner" style="border: 0px">
+                            {{ render(subfield) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        {% endfor %}
+    </div>
+    <div class="inline-field-template hide">
+        {% filter forceescape %}
+        <div class="inline-field">
+            <div class="inline-field-control">
+                <a href="javascript:void(0)" class="inline-remove-field"><i class="icon-remove"></i></a>
+            </div>
+            {{ render(template) }}
+        </div>
+        {% endfilter %}
+    </div>
+
+    <a id="{{ field.id }}-button" href="javascript:void(0)" class="btn" onclick="faForm.addInlineField(this, '{{ field.id }}');">{{ _gettext('Add') }} {{ field.label.text }}</a>
+</div>
+{% endmacro %}

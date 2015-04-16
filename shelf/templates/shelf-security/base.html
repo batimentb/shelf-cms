@@ -1,0 +1,35 @@
+{% import 'layout.html' as layout with context -%}
+{% import 'shelf/static.html' as shelf_static with context %}
+{% import 'admin/static.html' as admin_static with context %}
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <link href="{{ shelf_static.url(filename='bootstrap3/css/bootstrap.min.css') }}" rel="stylesheet" media="screen">
+        <link rel="stylesheet" href="{{ shelf_static.url(filename='font-awesome/css/font-awesome.min.css') }}">
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
+        <link href="{{ admin_static.url(filename='admin/css/admin.css') }}" rel="stylesheet">
+        <link href="{{ shelf_static.url(filename='shelf/css/shelf.css') }}" rel="stylesheet">
+        <link href="{{ shelf_static.url(filename='shelf/css/login.css') }}" rel="stylesheet">
+    </head>
+
+    <body style="background: url({{ url_for('shelf.static', filename='shelf/img/geometry.png') }})">
+        
+        <div class="row" style="height: 100%; width: 100%">
+          <div class="col-xs-12" style="height: 50%; margin-bottom: -100px"></div>
+          <div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4 col-md-4 col-md-offset-4">
+            <img width="35" height="19" src="{{ url_for('shelf.static', filename='shelf/img/minishelf.png') }}">
+            <h1>{% block title %}{% endblock %}</h1>
+            <form class="form-horizontal" role="form" action="{% block url %}{% endblock %}" method="POST">
+              {% block form %}              
+              {% endblock %}
+            </form>
+          </div>
+        </div>
+
+        {{ layout.messages() }}
+        
+      <script src="{{ shelf_static.url(filename='jquery/jquery-2.1.1.min.js') }}"></script>   
+      <script src="{{ shelf_static.url(filename='bootstrap3/js/bootstrap.min.js') }}"></script>
+    </body>
+</html>

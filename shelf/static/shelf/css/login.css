@@ -36,17 +36,30 @@ i {
 	width: 11px;
 }
 
-button {	
-	margin-top: 10px !important;
-	background-color: #ff4262 !important;
-	color: #fff !important;
-	border: 0px none !important;	
-}
-
 a {
 	color: #f14461 !important;
 }
 
 h1 {
 	margin-top:	5px !important;
+}
+
+.alert
+{
+    position: fixed;
+    right: 0px;
+    left: 0px;
+    bottom: 0px;
+}
+
+input#submit {
+	width: 100%;
+	margin-top: 10px !important;
+	background-color: #ff4262 !important;
+	color: #fff !important;
+	border: 0px none !important;
+}
+
+.has-error input {
+	border: 1px solid rgba(209, 64, 64, 0.9) !important;
 }

@@ -14,7 +14,7 @@ The following features are available from scratch :
 Specify any content by language or by country.
 ###Pure data management :
 Create a data managment tool like a custom CRM.  
-The following features can be usefull :
+The following features can be useful :
 - Export prefiltered data to excel format
 - Generate insights with an extensible dashboard system and widgets
 
@@ -43,7 +43,7 @@ Here are the complete list :
 We are writing the documentation, it should be available soon.
 ##Installation
 Want to try Shelf ? Install it and its dependencies with pip :  
-pip install shelf-cms
+pip install shelfcms
 ##Team
 Ismael Riahi, Software development  
 David Duphil, Graphical Design and User Experience

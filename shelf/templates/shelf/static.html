@@ -1,0 +1,3 @@
+{% macro url() -%}
+    {{ url_for('shelf.static', *varargs, **kwargs) }}
+{%- endmacro %}
