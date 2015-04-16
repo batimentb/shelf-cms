@@ -41,6 +41,8 @@ Here are the complete list :
 
 ##Documentation
 We are writing the documentation, it should be available soon.
+##Examples
+Examples are available in the examples/ directory.
 ##Installation
 Want to try Shelf ? Install it and its dependencies with pip :  
 pip install shelfcms
