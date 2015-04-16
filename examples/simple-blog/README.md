@@ -7,7 +7,7 @@ Data will be stored in a SQLite file.
 Password hashes will be stored (bcrypt function).
 
 1. Install dependancies
-pip install shelfcms py-bcrypt
+pip install shelfcms
 
 2. Create static/ directory
 mkdir static
