@@ -10,7 +10,8 @@
     {% for d in points %}
         {% if loop.index0 < 4 %}
         {% set percent = ((d.value * 100.0) / total) %}
-            <p style="font-size: 12px; line-height: 5px"><b>{{ d.value }} ({{ percent|int }}%)</b> {{ d.label }}</p>
+            <p style="font-size: 12px; line-height: 5px"><b>{{ d.value }} ({{ percent|int }}%)</b> 
+            {% if d.label|length > 20 %}{{ d.label[:20] }}[...]{% else %}{{ d.label }}{% endif %}</p>
             <div class="progress" style="height: 5px; background-color: #f3f3f3">
                 <div class="progress-bar" role="progressbar" aria-valuenow="{{ d.value }}" aria-valuemin="0" aria-valuemax="{{ total }}" style="width: {{ percent|int }}%;
                 {% if style.bar_colors %}background-color:
