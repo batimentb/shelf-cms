@@ -12,6 +12,9 @@ class LocalizedViewMixin:
 
 
 class LocalizedModelMixin:
+    def get_langs(self):
+        return self.translations
+
     def get_lang(self, lang):
         trads = {}
         if self.lang == lang:
