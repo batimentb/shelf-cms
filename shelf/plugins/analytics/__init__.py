@@ -101,14 +101,12 @@ class GoogleAnalyticsTextProvider(TextProvider):
             now = datetime.date.today()
             self.start = datetime.date(year=now.year, month=now.month, day=1)
             self.end = datetime.date(year=now.year, month=now.month, day=now.day)
-            print self.start, self.end
 
             prevmonth = now.month - 1 if now.month > 1 else 12
             lastdayofprevmonth = calendar.monthrange(now.year, prevmonth)[1]
             prevyear = now.year - 1 if prevmonth == 12 else now.year
             self.refstart = datetime.date(year=prevyear, month=prevmonth, day=1)
             self.refend = datetime.date(year=prevyear, month=prevmonth, day=lastdayofprevmonth)
-            print "=>", self.refstart, self.refend
         self.ga = ga
 
     def format_data(self, **kwargs):
@@ -224,12 +222,9 @@ class GoogleAnalyticsBarProvider(BarProvider):
     def get_max(self):
         if self.max is None:
             self.get_points()
-        print "MAX", self.max
         return self.max
 
     def get_total(self):
         if self.total is None:
             self.get_points()
-
-        print "TOTAL", self.total
         return self.total
