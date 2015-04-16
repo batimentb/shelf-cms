@@ -99,8 +99,10 @@ class DonutWidget(TextWidget):
         TextWidget.__init__(self, *args, **kwargs)
         self.style["rows"] = kwargs["rows"] if "rows" in kwargs else 2
         grays = [
-            '#696969', '#787878', '#828282', '#919191', '#A1A1A1', '#ABABAB',
-            '#B8B8B8', '#C2C2C2', '#CFCFCF', '#D9D9D9', '#E5E5E5', '#F5F5F5'
+            '#696969', '#707070', '#787878', '#808080', '#828282', '#8A8A8A', 
+            '#919191', '#999999', '#A1A1A1', '#A9A9A9', '#ABABAB', '#B0B0B0',
+            '#B8B8B8', '#C0C0C0', '#C2C2C2', '#C9C9C9', '#CFCFCF', '#D3D3D3', 
+            '#D9D9D9', '#DEDEDE', '#E5E5E5', '#DEDEDE', '#F5F5F5', '#FCFCFC'
         ]
         self.style["donut_colors"] = kwargs["donut_colors"] if "donut_colors" in kwargs else ['#ff9d98',] + grays
         self.style["label_color"] = kwargs["label_color"] if "label_color" in kwargs else "#4c4c4c"
