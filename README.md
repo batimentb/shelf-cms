@@ -3,7 +3,7 @@ Enhancing Flask microframework with a beautiful admin and cms-like features
 ##Uses cases
 
 ###Dynamic website administration : 
-Create a custom administration based on SQLAlchemy models.  
+Create a custom administration based on [SQLAlchemy](https://github.com/zzzeek/sqlalchemy) models.  
 The following features are available from scratch : 
 - Extensible user system : Registration, login, lost password, permissions
 - Workflow system : Draft, Review or Publish any content you want
@@ -19,7 +19,7 @@ The following features can be useful :
 - Generate insights with an extensible dashboard system and widgets
 
 ###Simple e-commerce website :
-Add ecommerce functionnalities by using the Satchless library.
+Add ecommerce functionnalities by using the [Satchless](https://github.com/mirumee/satchless) library.
 ##Core features list
 Every project using Shelf has the following features :
 - Extensible user system : Registration, login, lost password, permissions
@@ -45,7 +45,8 @@ We are writing the documentation, it should be available soon.
 Examples are available in the examples/ directory.
 ##Installation
 Want to try Shelf ? Install it and its dependencies with pip :  
-pip install shelfcms
+```pip install shelfcms```
 ##Team
-Ismael Riahi, Software development  
-David Duphil, Graphical Design and User Experience
+[Ismael Riahi](http://zma.fr), Software development  
+[David Duphil](http://www.davidduphil.com), Graphical Design and User Experience  
+Both are members of the [Batiment.B](http://www.batb.fr) web agency.
