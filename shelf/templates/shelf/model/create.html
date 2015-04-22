@@ -35,57 +35,6 @@
         </div>
 {% endblock %}
 
-<<<<<<< HEAD
-{% block bottom %}
-    <div class="navbar navbar-default navbar-fixed-bottom">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">{{ admin_view.name }}</a>
-            </div>
-            <div class="collapse navbar-collapse">
-                {% block model_menu_bar %}
-                <ul class="nav navbar-nav">
-
-
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                  {% if has_workflow %}
-                    <li class="actions"><a href="{{ return_url }}"><i class="fa fa-times"></i> {{ _gettext('Cancel') }}</a></li>
-                      <li class="actions draft dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><span><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</span> <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li class="actions draft" style="display:none"><a href="javascript:void(0)"><i class="fa fa-file-text-o"></i> {{ _gettext('Draft') }}</a></li>
-                                <li class="actions review"><a href="javascript:void(0)"><i class="fa fa-search"></i> {{ _gettext('Review') }}</a></li>
-                                <li class="actions publish"><a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i> {{ _gettext('Published') }}</a></li>
-                            </ul>
-                        </li>
-                    {% endif %}
-                    <li class="actions"><a href="#" class="add-new"><i class="fa fa-refresh"></i> {{ _gettext('Save and Add') }}</a></li>
-                  <li class="actions"><a role="submit" class="save-model" href="#"><i class="fa fa-check"></i> {{ _gettext('Save') }}</a></li>
-
-
-                </ul>
-                {% endblock %}
-            </div>
-        </div>
-    </div>
-{% endblock %}
-
-{% block tail %}
-  {{ super() }}
-  <script src="{{ url_for('admin.static', filename='datetimepicker/bootstrap-datetimepicker.js') }}"></script>
-  <script src={{ url_for('shelf.static', filename='tinymce/tinymce.min.js') }}></script>
-  <script src="{{ url_for('shelf.static', filename='shelf/js/wysihtml5-0.3.0.min.js') }}"></script>
-  <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.all.min.js') }}"></script>
-  <script src="{{ url_for('shelf.static', filename='shelf/js/bootstrap3-wysihtml5.min.js') }}"></script>
-  <script src="{{ url_for('shelf.static', filename='shelf/js/form.js') }}"></script>
-  <script language="javascript">
-=======
 {% block page_body %}
     {{ super() }}
     {% call lib.navbar(admin_view.name, pos="bottom") %}
@@ -99,7 +48,6 @@
     <script src="{{ url_for('shelf.static', filename='switchery/switchery.min.js') }}"></script>
     <script src="{{ admin_static.url(filename='admin/js/form.js') }}"></script>
     <script language="javascript">
->>>>>>> new
         (function($) {
             $('a.save-model').click(function (e) {
                 $("form.model-form").submit();
@@ -119,18 +67,6 @@
             elems.forEach(function(html) {
               var switchery = new Switchery(html, { color: '#a9a3d9', secondaryColor: '#e0e0e0' });
             });
-<<<<<<< HEAD
-
-       tinymce.init({
-           selector: ".wysiwyg-full",
-           plugins: "autoresize,paste,image,link,code,searchreplace,table,media",
-         });
-
-            $('.wysiwyg').wysihtml5({
-                html: true,
-            });
-=======
->>>>>>> new
         })(jQuery);
     </script>
 {% endblock %}
